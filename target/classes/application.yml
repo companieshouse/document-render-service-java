@@ -1,0 +1,25 @@
+spring:
+
+  application:
+    name: document-render-service
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health
+      base-path: /document-render-service
+      path-mapping:
+        health: healthcheck
+  endpoint:
+    health:
+      access: read_only
+      show-details: always
+  health:
+    defaults:
+      enabled: true
+    mongo:
+      enabled: false
+
+server:
+  port: ${PORT:8181}

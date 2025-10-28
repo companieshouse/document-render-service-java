@@ -1,9 +1,0 @@
-uk/gov/companieshouse/documentrender/exception/GlobalExceptionHandler.class
-uk/gov/companieshouse/documentrender/logging/DataMapHolder.class
-uk/gov/companieshouse/documentrender/model/Document.class
-uk/gov/companieshouse/documentrender/exception/BadRequestException.class
-uk/gov/companieshouse/documentrender/controller/DocumentRenderController.class
-uk/gov/companieshouse/documentrender/exception/NotFoundException.class
-uk/gov/companieshouse/documentrender/config/ApplicationConfig.class
-uk/gov/companieshouse/documentrender/exception/ErrorResponseBuilder.class
-uk/gov/companieshouse/documentrender/Application.class

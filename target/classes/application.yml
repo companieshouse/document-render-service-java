@@ -3,6 +3,10 @@ spring:
   application:
     name: document-render-service
 
+  service:
+    path:
+      prefix: /document-render-java
+
 management:
   endpoints:
     web:

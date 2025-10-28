@@ -1,3 +1,5 @@
+uk/gov/companieshouse/documentrender/controller/DocumentRenderControllerTest.class
 uk/gov/companieshouse/documentrender/logging/DataMapHolderTest.class
 uk/gov/companieshouse/documentrender/config/ApplicationConfigTest.class
 uk/gov/companieshouse/documentrender/ApplicationTest.class
+uk/gov/companieshouse/documentrender/exception/GlobalExceptionHandlerTest.class

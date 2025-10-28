@@ -1,3 +1,9 @@
 /Users/jbishop2/dev/docker-chs-development/repositories/document-render-service-java/src/main/java/uk/gov/companieshouse/documentrender/Application.java
 /Users/jbishop2/dev/docker-chs-development/repositories/document-render-service-java/src/main/java/uk/gov/companieshouse/documentrender/config/ApplicationConfig.java
+/Users/jbishop2/dev/docker-chs-development/repositories/document-render-service-java/src/main/java/uk/gov/companieshouse/documentrender/controller/DocumentRenderController.java
+/Users/jbishop2/dev/docker-chs-development/repositories/document-render-service-java/src/main/java/uk/gov/companieshouse/documentrender/exception/BadRequestException.java
+/Users/jbishop2/dev/docker-chs-development/repositories/document-render-service-java/src/main/java/uk/gov/companieshouse/documentrender/exception/ErrorResponseBuilder.java
+/Users/jbishop2/dev/docker-chs-development/repositories/document-render-service-java/src/main/java/uk/gov/companieshouse/documentrender/exception/GlobalExceptionHandler.java
+/Users/jbishop2/dev/docker-chs-development/repositories/document-render-service-java/src/main/java/uk/gov/companieshouse/documentrender/exception/NotFoundException.java
 /Users/jbishop2/dev/docker-chs-development/repositories/document-render-service-java/src/main/java/uk/gov/companieshouse/documentrender/logging/DataMapHolder.java
+/Users/jbishop2/dev/docker-chs-development/repositories/document-render-service-java/src/main/java/uk/gov/companieshouse/documentrender/model/Document.java

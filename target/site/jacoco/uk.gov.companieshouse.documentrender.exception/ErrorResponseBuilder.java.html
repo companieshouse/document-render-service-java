@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ErrorResponseBuilder.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">document-render-service-java</a> &gt; <a href="index.source.html" class="el_package">uk.gov.companieshouse.documentrender.exception</a> &gt; <span class="el_source">ErrorResponseBuilder.java</span></div><h1>ErrorResponseBuilder.java</h1><pre class="source lang-java linenums">package uk.gov.companieshouse.documentrender.exception;
+
+import java.util.ArrayList;
+import java.util.List;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import uk.gov.companieshouse.api.error.ApiError;
+import uk.gov.companieshouse.api.error.ApiErrorResponse;
+
+public class ErrorResponseBuilder {
+
+    private final List&lt;ApiError&gt; errors;
+    private HttpStatus status;
+
+<span class="fc" id="L15">    public ErrorResponseBuilder() {</span>
+<span class="fc" id="L16">        this.errors = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L17">    }</span>
+
+    public static ErrorResponseBuilder status(final HttpStatus status) {
+<span class="fc" id="L20">        var builder = new ErrorResponseBuilder();</span>
+
+<span class="fc bfc" id="L22" title="All 2 branches covered.">        if (!status.isError()) {</span>
+<span class="fc" id="L23">            throw new IllegalArgumentException(String.format(</span>
+                    &quot;Status to ApiErrorResponse must be an error status. %d (%s) is not.&quot;,
+<span class="fc" id="L25">                    status.value(),</span>
+                    status));
+        }
+
+<span class="fc" id="L29">        builder.status = status;</span>
+<span class="fc" id="L30">        return builder;</span>
+    }
+
+    public ErrorResponseBuilder withError(final ApiError error) {
+<span class="fc" id="L34">        this.errors.add(error);</span>
+<span class="fc" id="L35">        return this;</span>
+    }
+
+    public ErrorResponseBuilder withError(String error, String location, String locationType, String type) {
+<span class="fc" id="L39">        return withError(new ApiError(error, location, locationType, type));</span>
+    }
+
+    public ResponseEntity&lt;ApiErrorResponse&gt; build() {
+<span class="fc" id="L43">        var errResponse = new ApiErrorResponse();</span>
+<span class="fc" id="L44">        errResponse.setErrors(errors);</span>
+
+<span class="fc" id="L46">        return ResponseEntity.status(this.status).body(errResponse);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.10.202304240956</span></div></body></html>

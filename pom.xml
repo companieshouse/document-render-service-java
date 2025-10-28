@@ -43,6 +43,7 @@
     <private-api-sdk-java.version>4.0.385</private-api-sdk-java.version>
     <sdk-manager-java.version>3.0.11</sdk-manager-java.version>
     <structured-logging.version>3.0.39</structured-logging.version>
+    <software.amazon.awssdk-s3.version>2.31.51</software.amazon.awssdk-s3.version>
 
     <!--explicit versions of transitive dependencies with vulnerabilities in previous versions-->
     <jayway-jsonpath.version>2.9.0</jayway-jsonpath.version>
@@ -139,6 +140,17 @@
       <artifactId>private-api-sdk-java</artifactId>
       <version>${private-api-sdk-java.version}</version>
     </dependency>
+    <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>s3</artifactId>
+      <version>${software.amazon.awssdk-s3.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>apache-client</artifactId>
+      <version>${software.amazon.awssdk-s3.version}</version>
+      <scope>compile</scope>
+    </dependency>
 
     <!-- Testing -->
     <dependency>
@@ -157,6 +169,12 @@
     <dependency>
       <groupId>org.testcontainers</groupId>
       <artifactId>testcontainers</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>localstack</artifactId>
       <scope>test</scope>
     </dependency>
 

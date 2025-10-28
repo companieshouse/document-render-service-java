@@ -1,3 +1,5 @@
 /Users/jbishop2/dev/docker-chs-development/repositories/document-render-service-java/src/test/java/uk/gov/companieshouse/documentrender/ApplicationTest.java
 /Users/jbishop2/dev/docker-chs-development/repositories/document-render-service-java/src/test/java/uk/gov/companieshouse/documentrender/config/ApplicationConfigTest.java
+/Users/jbishop2/dev/docker-chs-development/repositories/document-render-service-java/src/test/java/uk/gov/companieshouse/documentrender/controller/DocumentRenderControllerTest.java
+/Users/jbishop2/dev/docker-chs-development/repositories/document-render-service-java/src/test/java/uk/gov/companieshouse/documentrender/exception/GlobalExceptionHandlerTest.java
 /Users/jbishop2/dev/docker-chs-development/repositories/document-render-service-java/src/test/java/uk/gov/companieshouse/documentrender/logging/DataMapHolderTest.java

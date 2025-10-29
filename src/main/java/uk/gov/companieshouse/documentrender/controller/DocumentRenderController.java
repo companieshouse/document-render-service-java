@@ -1,11 +1,14 @@
 package uk.gov.companieshouse.documentrender.controller;
 
+import java.util.Map;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import uk.gov.companieshouse.documentrender.controller.validator.RequireHeaders;
 import uk.gov.companieshouse.documentrender.model.Document;
 import uk.gov.companieshouse.logging.Logger;
 
@@ -19,17 +22,22 @@ public class DocumentRenderController {
         this.logger = logger;
     }
 
+    @RequireHeaders({"templateName", "assetID", "Accept", "Content-Type", "Location"})
     @PostMapping(value = "/", consumes = "application/json")
-    public ResponseEntity<Void> renderDocument(@RequestBody Document document, @RequestParam("is_public") boolean isPublic) {
-        logger.trace("renderDocument(document=%s, isPublic=%s) method called.".formatted(document, isPublic));
+    public ResponseEntity<Void> renderDocument(@RequestBody Document document,
+            @RequestParam("is_public") boolean isPublic, @RequestHeader Map<String, String> allHeaders) {
+        logger.trace("renderDocument(document=%s, isPublic=%s, headers=%s) method called."
+                .formatted(document, isPublic, allHeaders));
 
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.ok().build();
     }
 
     @PostMapping(value = "/store", consumes = "application/json")
-    public ResponseEntity<Void> renderAndStoreDocument(@RequestBody Document document, @RequestParam("is_public") boolean isPublic) {
-        logger.trace("renderAndStoreDocument(document=%s, isPublic=%s) method called.".formatted(document, isPublic));
+    public ResponseEntity<Void> renderAndStoreDocument(@RequestBody Document document,
+            @RequestParam("is_public") boolean isPublic, @RequestHeader Map<String, String> allHeaders) {
+        logger.trace("renderAndStoreDocument(document=%s, isPublic=%s, headers=%s) method called."
+                .formatted(document, isPublic, allHeaders));
 
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.ok().build();
     }
 }

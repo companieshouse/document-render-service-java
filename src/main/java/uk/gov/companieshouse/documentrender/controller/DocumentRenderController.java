@@ -29,7 +29,7 @@ public class DocumentRenderController {
         logger.trace("renderDocument(document=%s, isPublic=%s, headers=%s) method called."
                 .formatted(document, isPublic, allHeaders));
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.notFound().build();
     }
 
     @PostMapping(value = "/store", consumes = "application/json")
@@ -38,6 +38,6 @@ public class DocumentRenderController {
         logger.trace("renderAndStoreDocument(document=%s, isPublic=%s, headers=%s) method called."
                 .formatted(document, isPublic, allHeaders));
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.notFound().build();
     }
 }

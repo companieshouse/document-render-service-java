@@ -25,19 +25,24 @@ public class DocumentRenderController {
     @RequireHeaders({"templateName", "assetID", "Accept", "Content-Type", "Location"})
     @PostMapping(value = "/", consumes = "application/json")
     public ResponseEntity<Void> renderDocument(@RequestBody Document document,
-            @RequestParam("is_public") boolean isPublic, @RequestHeader Map<String, String> allHeaders) {
+            @RequestParam(value = "is_public", defaultValue = "false") boolean isPublic,
+            @RequestHeader Map<String, String> allHeaders) {
         logger.trace("renderDocument(document=%s, isPublic=%s, headers=%s) method called."
                 .formatted(document, isPublic, allHeaders));
 
+        // Not yet officially implemented, but needs to exist to test the header validator.
         return ResponseEntity.notFound().build();
     }
 
+    @RequireHeaders({"templateName", "assetID", "Accept", "Content-Type", "Location"})
     @PostMapping(value = "/store", consumes = "application/json")
     public ResponseEntity<Void> renderAndStoreDocument(@RequestBody Document document,
-            @RequestParam("is_public") boolean isPublic, @RequestHeader Map<String, String> allHeaders) {
+            @RequestParam(value = "is_public", defaultValue = "false") boolean isPublic,
+            @RequestHeader Map<String, String> allHeaders) {
         logger.trace("renderAndStoreDocument(document=%s, isPublic=%s, headers=%s) method called."
                 .formatted(document, isPublic, allHeaders));
 
+        // Not yet officially implemented, but needs to exist to test the header validator.
         return ResponseEntity.notFound().build();
     }
 }

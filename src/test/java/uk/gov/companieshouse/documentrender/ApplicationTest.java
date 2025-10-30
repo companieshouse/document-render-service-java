@@ -11,8 +11,8 @@ import org.springframework.test.context.ActiveProfiles;
 @ActiveProfiles("test")
 class ApplicationTest {
 
-    @LocalServerPort
-    private int serverPort;
+    //@LocalServerPort
+    //private int serverPort;
 
     @Test
     void mainShouldRunWithoutErrors() {

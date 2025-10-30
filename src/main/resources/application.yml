@@ -11,8 +11,8 @@ management:
   endpoints:
     web:
       exposure:
-        include: health
-      base-path: /document-render-service
+        include: health, mappings
+      base-path: /
       path-mapping:
         health: healthcheck
   endpoint:
@@ -26,4 +26,4 @@ management:
       enabled: false
 
 server:
-  port: ${PORT:8181}
+  port: ${PORT:8080}

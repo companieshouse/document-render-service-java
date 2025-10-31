@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>uk.gov.companieshouse</groupId>
+    <artifactId>companies-house-parent</artifactId>
+    <version>2.1.12</version>
+    <relativePath/>
+  </parent>
+
+  <artifactId>document-render-service-java</artifactId>
+  <version>latest</version>
+  <name>${project.artifactId}</name>
+  <packaging>jar</packaging>
+
+  <properties>
+    <java.version>21</java.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+    <maven.compiler.source>${java.version}</maven.compiler.source>
+    <maven.compiler.target>${java.version}</maven.compiler.target>
+    <maven.compiler.release>${java.version}</maven.compiler.release>
+
+    <spring.boot.version>3.5.6</spring.boot.version>
+
+    <maven-surefire.version>3.5.2</maven-surefire.version>
+    <maven-surefire-plugin.version>${maven-surefire.version}</maven-surefire-plugin.version>
+    <maven-failsafe-plugin.version>${maven-surefire.version}</maven-failsafe-plugin.version>
+    <jib-maven-plugin.version>3.4.6</jib-maven-plugin.version>
+
+    <software.amazon.awssdk.version>2.31.78</software.amazon.awssdk.version>
+
+    <commons-text.version>1.13.0</commons-text.version>
+    <wiremock.version>3.11.0</wiremock.version>
+    <system-rules.version>1.19.0</system-rules.version>
+    <http-client.version>5.5</http-client.version>
+
+    <skip.unit.tests>false</skip.unit.tests>
+    <skip.integration.tests>false</skip.integration.tests>
+
+    <!--companies house-->
+    <private-api-sdk-java.version>4.0.385</private-api-sdk-java.version>
+    <sdk-manager-java.version>3.0.11</sdk-manager-java.version>
+    <structured-logging.version>3.0.39</structured-logging.version>
+    <software.amazon.awssdk-s3.version>2.31.51</software.amazon.awssdk-s3.version>
+
+    <!--explicit versions of transitive dependencies with vulnerabilities in previous versions-->
+    <jayway-jsonpath.version>2.9.0</jayway-jsonpath.version>
+
+    <!--sonar configuration-->
+    <sonar.coverage.jacoco.xmlReportPaths>
+      ${project.build.directory}/site/jacoco/jacoco.xml
+    </sonar.coverage.jacoco.xmlReportPaths>
+    <sonar.jacoco.reports>${project.build.directory}/site</sonar.jacoco.reports>
+    <sonar.projectName>document-render-service-java</sonar.projectName>
+    <sonar.projectKey>uk.gov.companieshouse:document-render-service-java</sonar.projectKey>
+    <sonar.token>${CODE_ANALYSIS_TOKEN}</sonar.token>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-dependencies</artifactId>
+        <version>${spring.boot.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
+  <dependencies>
+
+    <!-- Spring Frameworks -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-aop</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-actuator</artifactId>
+    </dependency>
+
+    <!-- External Dependencies -->
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-text</artifactId>
+      <version>${commons-text.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.hibernate.validator</groupId>
+      <artifactId>hibernate-validator</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents.client5</groupId>
+      <artifactId>httpclient5</artifactId>
+      <version>${http-client.version}</version>
+    </dependency>
+
+    <!-- Internal Dependencies -->
+    <dependency>
+      <groupId>uk.gov.companieshouse</groupId>
+      <artifactId>structured-logging</artifactId>
+      <version>${structured-logging.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>uk.gov.companieshouse</groupId>
+      <artifactId>sdk-manager-java</artifactId>
+      <version>${sdk-manager-java.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>com.nimbusds</groupId>
+          <artifactId>nimbus-jose-jwt</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>commons-collections</groupId>
+          <artifactId>commons-collections</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>io.grpc</groupId>
+          <artifactId>grpc-api</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>io.grpc</groupId>
+          <artifactId>grpc-context</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>uk.gov.companieshouse</groupId>
+      <artifactId>private-api-sdk-java</artifactId>
+      <version>${private-api-sdk-java.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>s3</artifactId>
+      <version>${software.amazon.awssdk-s3.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>software.amazon.awssdk</groupId>
+      <artifactId>apache-client</artifactId>
+      <version>${software.amazon.awssdk-s3.version}</version>
+      <scope>compile</scope>
+    </dependency>
+
+    <!-- Testing -->
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>com.jayway.jsonpath</groupId>
+          <artifactId>json-path</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <!-- You might also need the core module -->
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>testcontainers</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>localstack</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>junit-jupiter</artifactId>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>org.testcontainers</groupId>
+      <artifactId>mongodb</artifactId>
+      <scope>test</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>org.apache.commons</groupId>
+          <artifactId>commons-compress</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+  </dependencies>
+
+  <build>
+    <plugins>
+      <!-- Spring Boot Maven Plugin -->
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+        <version>${spring.boot.version}</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>repackage</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>com.google.cloud.tools</groupId>
+        <artifactId>jib-maven-plugin</artifactId>
+        <version>${jib-maven-plugin.version}</version>
+        <configuration>
+          <containerizingMode>packaged</containerizingMode>
+          <from>
+            <image>416670754337.dkr.ecr.eu-west-2.amazonaws.com/ci-corretto-runtime-21:latest</image>
+          </from>
+          <to>
+            <image>416670754337.dkr.ecr.eu-west-2.amazonaws.com/${project.artifactId}:latest</image>
+          </to>
+          <container>
+            <expandClasspathDependencies>true</expandClasspathDependencies>
+          </container>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>${jacoco-maven-plugin.version}</version>
+        <configuration>
+          <append>true</append>
+          <destFile>${sonar.jacoco.reports}/jacoco.exec</destFile>
+          <dataFile>${sonar.jacoco.reports}/jacoco.exec</dataFile>
+          <outputDirectory>${sonar.jacoco.reports}/jacoco</outputDirectory>
+        </configuration>
+        <executions>
+          <execution>
+            <id>pre-unit-test</id>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+            <configuration>
+              <propertyName>surefireArgLine</propertyName>
+            </configuration>
+          </execution>
+          <execution>
+            <id>post-unit-test</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>report</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>pre-integration-test</id>
+            <phase>pre-integration-test</phase>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+            <configuration>
+              <propertyName>failsafeArgLine</propertyName>
+            </configuration>
+          </execution>
+          <execution>
+            <id>post-integration-test</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>report</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>${maven-surefire-plugin.version}</version>
+        <configuration>
+          <argLine>-Dfile.encoding=UTF-8</argLine>
+          <argLine>${surefireArgLine}</argLine>
+          <skipTests>${skip.unit.tests}</skipTests>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-failsafe-plugin</artifactId>
+        <version>${maven-failsafe-plugin.version}</version>
+        <executions>
+          <execution>
+            <phase>integration-test</phase>
+            <goals>
+              <goal>integration-test</goal>
+              <goal>verify</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <properties>
+            <property>
+              <name>listener</name>
+              <value>org.sonar.java.jacoco.JUnitListener</value>
+            </property>
+          </properties>
+          <argLine>-Dfile.encoding=UTF-8</argLine>
+          <argLine>${failsafeArgLine}</argLine>
+          <classesDirectory>${project.build.outputDirectory}</classesDirectory>
+          <skipITs>${skip.integration.tests}</skipITs>
+        </configuration>
+      </plugin>
+    </plugins>
+
+  </build>
+
+</project>

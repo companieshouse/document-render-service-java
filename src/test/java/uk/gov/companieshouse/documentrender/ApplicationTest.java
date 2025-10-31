@@ -4,10 +4,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.test.context.ActiveProfiles;
 
-//@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @SpringBootTest(
         webEnvironment = WebEnvironment.DEFINED_PORT,
         properties = {

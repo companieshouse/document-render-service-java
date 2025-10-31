@@ -31,7 +31,7 @@ public class DocumentRenderController {
                 .formatted(document, isPublic, allHeaders));
 
         // Not yet officially implemented, but needs to exist to test the header validator.
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.ok().build();
     }
 
     @RequireHeaders({"templateName", "assetID", "Accept", "Content-Type", "Location"})
@@ -43,6 +43,6 @@ public class DocumentRenderController {
                 .formatted(document, isPublic, allHeaders));
 
         // Not yet officially implemented, but needs to exist to test the header validator.
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.ok().build();
     }
 }

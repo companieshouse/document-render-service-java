@@ -29,7 +29,7 @@ public class DocumentRenderControllerTest {
     }
 
     @Test
-    void givenValidPublicRequest_whenRenderDocumentCalled_thenNotFoundReturned() {
+    void givenValidPublicRequest_whenRenderDocumentCalled_thenOkReturned() {
         Map<String, String> headers = new HashMap<>();
         headers.put("templateName", "1");
         headers.put("assetId", "1");
@@ -42,11 +42,11 @@ public class DocumentRenderControllerTest {
         ResponseEntity<Void> response = underTest.renderDocument(document, true, headers);
 
         assertThat(response, is(notNullValue()));
-        assertThat(response.getStatusCode().value(), is(404));
+        assertThat(response.getStatusCode().value(), is(200));
     }
 
     @Test
-    void givenValidPrivateRequest_whenRenderDocumentCalled_thenNotFoundReturned() {
+    void givenValidPrivateRequest_whenRenderDocumentCalled_thenOkReturned() {
         Map<String, String> headers = new HashMap<>();
         headers.put("templateName", "1");
         headers.put("assetId", "1");
@@ -59,11 +59,11 @@ public class DocumentRenderControllerTest {
         ResponseEntity<Void> response = underTest.renderDocument(document, false, headers);
 
         assertThat(response, is(notNullValue()));
-        assertThat(response.getStatusCode().value(), is(404));
+        assertThat(response.getStatusCode().value(), is(200));
     }
 
     @Test
-    void givenValidPublicRequest_whenRenderAndStoreDocumentCalled_thenNotFoundReturned() {
+    void givenValidPublicRequest_whenRenderAndStoreDocumentCalled_thenOkReturned() {
         Map<String, String> headers = new HashMap<>();
         headers.put("templateName", "1");
         headers.put("assetId", "1");
@@ -76,11 +76,11 @@ public class DocumentRenderControllerTest {
         ResponseEntity<Void> response = underTest.renderAndStoreDocument(document, true, headers);
 
         assertThat(response, is(notNullValue()));
-        assertThat(response.getStatusCode().value(), is(404));
+        assertThat(response.getStatusCode().value(), is(200));
     }
 
     @Test
-    void givenValidPrivateRequest_whenRenderAndStoreDocumentCalled_thenNotFoundReturned() {
+    void givenValidPrivateRequest_whenRenderAndStoreDocumentCalled_thenOkReturned() {
         Map<String, String> headers = new HashMap<>();
         headers.put("templateName", "1");
         headers.put("assetId", "1");
@@ -93,6 +93,6 @@ public class DocumentRenderControllerTest {
         ResponseEntity<Void> response = underTest.renderAndStoreDocument(document, false, headers);
 
         assertThat(response, is(notNullValue()));
-        assertThat(response.getStatusCode().value(), is(404));
+        assertThat(response.getStatusCode().value(), is(200));
     }
 }

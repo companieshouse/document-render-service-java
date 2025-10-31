@@ -93,10 +93,88 @@ public class DocumentRenderIntegrationTest {
     }
 
     @Test
-    public void givenMissingHeaders_whenRenderDocumentCalled_thenReturnOK() throws Exception {
+    public void givenMissingHeaders_whenRenderDocumentCalled_thenReturnBadRequest() throws Exception {
         var document = new Document();
 
         MultiValueMap<String, String> headerMap = new LinkedMultiValueMap<>();
+        headerMap.add("assetId", "1");
+        headerMap.add("Accept", "application/json");
+        headerMap.add("Content-Type", "application/json");
+        headerMap.add("Location", "s3-bucket");
+
+        ApiError apiError = new ApiError();
+        apiError.setError("An expected header ws not supplied with the request: Required header 'templateName' is missing");
+        apiError.setLocation("handleMissingHeaderException");
+        apiError.setLocationType("request-header");
+        apiError.setType("document-render");
+
+        ApiErrorResponse apiErrorResponse = new ApiErrorResponse();
+        apiErrorResponse.setErrors(List.of(apiError));
+
+        var headers = new HttpHeaders(headerMap);
+
+        String jsonBody = mapper.writeValueAsString(document);
+        String jsonError = mapper.writeValueAsString(apiErrorResponse);
+
+        mockMvc.perform(
+                        post("%s/".formatted(servicePath))
+                                .headers(headers)
+                                .header("X-Request-Id", "my-x-request-id")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonBody)
+                                .accept(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().string(jsonError));
+    }
+
+    @Test
+    public void givenNullHeader_whenRenderDocumentCalled_thenReturnBadRequest() throws Exception {
+        var document = new Document();
+
+        MultiValueMap<String, String> headerMap = new LinkedMultiValueMap<>();
+        headerMap.add("templateName", null);
+        headerMap.add("assetId", "1");
+        headerMap.add("Accept", "application/json");
+        headerMap.add("Content-Type", "application/json");
+        headerMap.add("Location", "s3-bucket");
+
+        ApiError apiError = new ApiError();
+        apiError.setError("An expected header ws not supplied with the request: Required header 'templateName' is missing");
+        apiError.setLocation("handleMissingHeaderException");
+        apiError.setLocationType("request-header");
+        apiError.setType("document-render");
+
+        ApiErrorResponse apiErrorResponse = new ApiErrorResponse();
+        apiErrorResponse.setErrors(List.of(apiError));
+
+        var headers = new HttpHeaders(headerMap);
+
+        String jsonBody = mapper.writeValueAsString(document);
+        String jsonError = mapper.writeValueAsString(apiErrorResponse);
+
+        mockMvc.perform(
+                        post("%s/".formatted(servicePath))
+                                .headers(headers)
+                                .header("X-Request-Id", "my-x-request-id")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonBody)
+                                .accept(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().string(jsonError));
+    }
+
+    @Test
+    public void givenBlankHeader_whenRenderDocumentCalled_thenReturnBadRequest() throws Exception {
+        var document = new Document();
+
+        MultiValueMap<String, String> headerMap = new LinkedMultiValueMap<>();
+        headerMap.add("templateName", "");
         headerMap.add("assetId", "1");
         headerMap.add("Accept", "application/json");
         headerMap.add("Content-Type", "application/json");
@@ -132,5 +210,4 @@ public class DocumentRenderIntegrationTest {
 //                .andExpect(jsonPath("$.description").value("A test item"))
         ;
     }
-
 }

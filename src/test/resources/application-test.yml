@@ -3,5 +3,9 @@ spring:
   application:
     name: document-render-service
 
+  service:
+    path:
+      prefix: /document-render-java
+
 server:
   port: 9191

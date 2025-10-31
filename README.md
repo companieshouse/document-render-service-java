@@ -8,17 +8,25 @@
 - (Optionally) stores documents in AWS S3 via the `document-storage-service`.
 
 ### Incoming Requests
-- `POST` request to endpoint: `/document-render`
-    - Authorization: `TBD`
+- `POST` request to endpoint: `/document-render?is_public=true`
+    - Authorization: `Basic base64encode(username:password)`
     - Headers:
-        - `TBD`: Definition
+        - `templateName`: ''
+        - `assetId`: ''
+        - `Accept`: ''
+        - `Content-Type`: ''
+        - `Location`: ''
     - Body:
       ```json
       ```
-- `POST` request to endpoint: `/document-render/store`
-    - Authorization: `TBD`
+- `POST` request to endpoint: `/document-render/store?is_public=false`
+    - Authorization: `Basic base64encode(username:password)`
     - Headers:
-        - `TBD`: Definition
+        - `templateName`: ''
+        - `assetId`: ''
+        - `Accept`: ''
+        - `Content-Type`: ''
+        - `Location`: ''
     - Body:
       ```json
       ```

@@ -18,6 +18,19 @@ public class GlobalExceptionHandler {
         this.logger = logger;
     }
 
+    @ExceptionHandler({MissingHeaderException.class})
+    public ResponseEntity<ApiErrorResponse> handleMissingHeaderException(final MissingHeaderException e) {
+        logger.error("An %s was raised during processing!".formatted(e.getClass().getSimpleName()), e);
+
+        return ErrorResponseBuilder
+                .status(HttpStatus.BAD_REQUEST)
+                .withError("An expected header ws not supplied with the request: %s".formatted(e.getMessage()),
+                        "handleMissingHeaderException",
+                        "request-header",
+                        "document-render")
+                .build();
+    }
+
     @ExceptionHandler({BadRequestException.class})
     public ResponseEntity<ApiErrorResponse> handleBadRequestException(final BadRequestException e) {
         logger.error("An %s was raised during processing!".formatted(e.getClass().getSimpleName()), e);

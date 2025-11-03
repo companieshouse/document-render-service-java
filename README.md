@@ -8,12 +8,12 @@
 - (Optionally) stores documents in AWS S3 via the `document-storage-service`.
 
 ### Incoming Requests
-- `POST` request to endpoint: `/document-render?is_public=true`
+- `POST` request to endpoint: `/document-render/?is_public=true`
     - Authorization: `Basic base64encode(username:password)`
     - Headers:
-        - `templateName`: ''
-        - `assetId`: ''
-        - `Accept`: ''
+        - `templateName`: `dissolution`
+        - `assetId`: `fonts`
+        - `Accept`: `TransportNewLight-Regular.ttf`
         - `Content-Type`: ''
         - `Location`: ''
     - Body:
@@ -22,9 +22,9 @@
 - `POST` request to endpoint: `/document-render/store?is_public=false`
     - Authorization: `Basic base64encode(username:password)`
     - Headers:
-        - `templateName`: ''
-        - `assetId`: ''
-        - `Accept`: ''
+        - `templateName`: `dissolution`
+        - `assetId`: `fonts`
+        - `Accept`: `TransportNewLight-Regular.ttf`
         - `Content-Type`: ''
         - `Location`: ''
     - Body:

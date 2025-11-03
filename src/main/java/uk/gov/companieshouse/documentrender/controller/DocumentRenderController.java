@@ -1,6 +1,7 @@
 package uk.gov.companieshouse.documentrender.controller;
 
 import java.util.Map;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,8 +31,8 @@ public class DocumentRenderController {
         logger.trace("renderDocument(document=%s, isPublic=%s, headers=%s) method called."
                 .formatted(document, isPublic, allHeaders));
 
-        // Not yet officially implemented, but needs to exist to test the header validator.
-        return ResponseEntity.ok().build();
+        // Not yet fully implemented, but needs to exist to test the header validator.
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @RequireHeaders({"templateName", "assetID", "Accept", "Content-Type", "Location"})
@@ -42,7 +43,7 @@ public class DocumentRenderController {
         logger.trace("renderAndStoreDocument(document=%s, isPublic=%s, headers=%s) method called."
                 .formatted(document, isPublic, allHeaders));
 
-        // Not yet officially implemented, but needs to exist to test the header validator.
-        return ResponseEntity.ok().build();
+        // Not yet fully implemented, but needs to exist to test the endpoint and header validation.
+        return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 }

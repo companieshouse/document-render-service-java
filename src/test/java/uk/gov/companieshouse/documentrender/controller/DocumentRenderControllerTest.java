@@ -42,7 +42,7 @@ public class DocumentRenderControllerTest {
         ResponseEntity<Void> response = underTest.renderDocument(document, true, headers);
 
         assertThat(response, is(notNullValue()));
-        assertThat(response.getStatusCode().value(), is(200));
+        assertThat(response.getStatusCode().value(), is(201));
     }
 
     @Test
@@ -59,7 +59,7 @@ public class DocumentRenderControllerTest {
         ResponseEntity<Void> response = underTest.renderDocument(document, false, headers);
 
         assertThat(response, is(notNullValue()));
-        assertThat(response.getStatusCode().value(), is(200));
+        assertThat(response.getStatusCode().value(), is(201));
     }
 
     @Test
@@ -76,7 +76,7 @@ public class DocumentRenderControllerTest {
         ResponseEntity<Void> response = underTest.renderAndStoreDocument(document, true, headers);
 
         assertThat(response, is(notNullValue()));
-        assertThat(response.getStatusCode().value(), is(200));
+        assertThat(response.getStatusCode().value(), is(201));
     }
 
     @Test
@@ -93,6 +93,6 @@ public class DocumentRenderControllerTest {
         ResponseEntity<Void> response = underTest.renderAndStoreDocument(document, false, headers);
 
         assertThat(response, is(notNullValue()));
-        assertThat(response.getStatusCode().value(), is(200));
+        assertThat(response.getStatusCode().value(), is(201));
     }
 }

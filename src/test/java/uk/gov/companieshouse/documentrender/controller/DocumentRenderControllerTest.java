@@ -4,6 +4,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -27,42 +29,70 @@ public class DocumentRenderControllerTest {
     }
 
     @Test
-    void givenValidPublicRequest_whenRenderDocumentCalled_thenNotFoundReturned() {
+    void givenValidPublicRequest_whenRenderDocumentCalled_thenOkReturned() {
+        Map<String, String> headers = new HashMap<>();
+        headers.put("templateName", "1");
+        headers.put("assetId", "1");
+        headers.put("Accept", "application/json");
+        headers.put("Content-Type", "application/json");
+        headers.put("Location", "s3-bucket");
+
         Document document = new Document();
 
-        ResponseEntity<Void> response = underTest.renderDocument(document, true);
+        ResponseEntity<Void> response = underTest.renderDocument(document, true, headers);
 
         assertThat(response, is(notNullValue()));
-        assertThat(response.getStatusCode().value(), is(404));
+        assertThat(response.getStatusCode().value(), is(200));
     }
 
     @Test
-    void givenValidPrivateRequest_whenRenderDocumentCalled_thenNotFoundReturned() {
+    void givenValidPrivateRequest_whenRenderDocumentCalled_thenOkReturned() {
+        Map<String, String> headers = new HashMap<>();
+        headers.put("templateName", "1");
+        headers.put("assetId", "1");
+        headers.put("Accept", "application/json");
+        headers.put("Content-Type", "application/json");
+        headers.put("Location", "s3-bucket");
+
         Document document = new Document();
 
-        ResponseEntity<Void> response = underTest.renderDocument(document, false);
+        ResponseEntity<Void> response = underTest.renderDocument(document, false, headers);
 
         assertThat(response, is(notNullValue()));
-        assertThat(response.getStatusCode().value(), is(404));
+        assertThat(response.getStatusCode().value(), is(200));
     }
 
     @Test
-    void givenValidPublicRequest_whenRenderAndStoreDocumentCalled_thenNotFoundReturned() {
+    void givenValidPublicRequest_whenRenderAndStoreDocumentCalled_thenOkReturned() {
+        Map<String, String> headers = new HashMap<>();
+        headers.put("templateName", "1");
+        headers.put("assetId", "1");
+        headers.put("Accept", "application/json");
+        headers.put("Content-Type", "application/json");
+        headers.put("Location", "s3-bucket");
+
         Document document = new Document();
 
-        ResponseEntity<Void> response = underTest.renderAndStoreDocument(document, true);
+        ResponseEntity<Void> response = underTest.renderAndStoreDocument(document, true, headers);
 
         assertThat(response, is(notNullValue()));
-        assertThat(response.getStatusCode().value(), is(404));
+        assertThat(response.getStatusCode().value(), is(200));
     }
 
     @Test
-    void givenValidPrivateRequest_whenRenderAndStoreDocumentCalled_thenNotFoundReturned() {
+    void givenValidPrivateRequest_whenRenderAndStoreDocumentCalled_thenOkReturned() {
+        Map<String, String> headers = new HashMap<>();
+        headers.put("templateName", "1");
+        headers.put("assetId", "1");
+        headers.put("Accept", "application/json");
+        headers.put("Content-Type", "application/json");
+        headers.put("Location", "s3-bucket");
+
         Document document = new Document();
 
-        ResponseEntity<Void> response = underTest.renderAndStoreDocument(document, false);
+        ResponseEntity<Void> response = underTest.renderAndStoreDocument(document, false, headers);
 
         assertThat(response, is(notNullValue()));
-        assertThat(response.getStatusCode().value(), is(404));
+        assertThat(response.getStatusCode().value(), is(200));
     }
 }

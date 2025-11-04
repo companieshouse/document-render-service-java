@@ -56,6 +56,8 @@
     <sonar.projectName>document-render-service-java</sonar.projectName>
     <sonar.projectKey>uk.gov.companieshouse:document-render-service-java</sonar.projectKey>
     <sonar.token>${CODE_ANALYSIS_TOKEN}</sonar.token>
+    <sonar.login></sonar.login>
+    <sonar.password></sonar.password>
   </properties>
 
   <dependencyManagement>
@@ -194,6 +196,13 @@
           <artifactId>commons-compress</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+
+    <!-- CVE-2025-48924 -->
+    <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-lang3</artifactId>
+        <version>3.18.0</version>
     </dependency>
 
   </dependencies>

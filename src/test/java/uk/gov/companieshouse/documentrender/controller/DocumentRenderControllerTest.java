@@ -3,6 +3,8 @@ package uk.gov.companieshouse.documentrender.controller;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,12 +13,17 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.core.io.Resource;
 import org.springframework.http.ResponseEntity;
 import uk.gov.companieshouse.documentrender.model.Document;
+import uk.gov.companieshouse.documentrender.processor.DocumentRenderProcessor;
 import uk.gov.companieshouse.logging.Logger;
 
 @ExtendWith(MockitoExtension.class)
 public class DocumentRenderControllerTest {
+
+    @Mock
+    DocumentRenderProcessor documentRenderProcessor;
 
     @Mock
     Logger logger;
@@ -25,7 +32,7 @@ public class DocumentRenderControllerTest {
 
     @BeforeEach
     void setUp() {
-        underTest = new DocumentRenderController(logger);
+        underTest = new DocumentRenderController(documentRenderProcessor, logger);
     }
 
     @Test
@@ -39,7 +46,9 @@ public class DocumentRenderControllerTest {
 
         Document document = new Document();
 
-        ResponseEntity<Void> response = underTest.renderDocument(document, true, headers);
+        ResponseEntity<Resource> response = underTest.renderDocument(document, true, headers);
+
+        verify(documentRenderProcessor, times(1)).render();
 
         assertThat(response, is(notNullValue()));
         assertThat(response.getStatusCode().value(), is(201));
@@ -56,7 +65,9 @@ public class DocumentRenderControllerTest {
 
         Document document = new Document();
 
-        ResponseEntity<Void> response = underTest.renderDocument(document, false, headers);
+        ResponseEntity<Resource> response = underTest.renderDocument(document, false, headers);
+
+        verify(documentRenderProcessor, times(1)).render();
 
         assertThat(response, is(notNullValue()));
         assertThat(response.getStatusCode().value(), is(201));
@@ -73,7 +84,9 @@ public class DocumentRenderControllerTest {
 
         Document document = new Document();
 
-        ResponseEntity<Void> response = underTest.renderAndStoreDocument(document, true, headers);
+        ResponseEntity<Resource> response = underTest.renderAndStoreDocument(document, true, headers);
+
+        verify(documentRenderProcessor, times(1)).render();
 
         assertThat(response, is(notNullValue()));
         assertThat(response.getStatusCode().value(), is(201));
@@ -90,7 +103,9 @@ public class DocumentRenderControllerTest {
 
         Document document = new Document();
 
-        ResponseEntity<Void> response = underTest.renderAndStoreDocument(document, false, headers);
+        ResponseEntity<Resource> response = underTest.renderAndStoreDocument(document, false, headers);
+
+        verify(documentRenderProcessor, times(1)).render();
 
         assertThat(response, is(notNullValue()));
         assertThat(response.getStatusCode().value(), is(201));

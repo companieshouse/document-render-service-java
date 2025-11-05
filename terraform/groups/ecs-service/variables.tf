@@ -144,9 +144,9 @@ variable "use_set_environment_files" {
   description = "Toggle default global and shared environment files"
 }
 
-variable "document_render_service_version" {
+variable "document_render_service_java_version" {
   type        = string
-  description = "The version of the document-render-service container to run."
+  description = "The version of the document-render-service-java container to run."
 }
 
 variable "eric_version" {

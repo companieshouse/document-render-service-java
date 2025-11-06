@@ -4,12 +4,12 @@ locals {
   name_prefix                = "${local.stack_name}-${var.environment}"
   global_prefix              = "global-${var.environment}"
   service_name               = "document-render-service-java"
-  service_short_name         = "doc-render-svc"
+  service_short_name         = "doc-render-java"
   container_port             = "5001"
   eric_port                  = "10000"
   docker_repo                = "document-render-service-java"
   kms_alias                  = "alias/${var.aws_profile}/environment-services-kms"
-  lb_listener_rule_priority  = 84
+  lb_listener_rule_priority  = 85
   lb_listener_paths          = ["/document-render/*", "/document-render*"]
   healthcheck_path           = "/document-render/healthcheck"
   healthcheck_matcher        = "200"

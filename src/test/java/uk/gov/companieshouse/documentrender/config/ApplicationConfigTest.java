@@ -8,12 +8,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import uk.gov.companieshouse.environment.EnvironmentReader;
 import uk.gov.companieshouse.logging.Logger;
 
 @ExtendWith(MockitoExtension.class)
-public class ApplicationConfigTest {
+class ApplicationConfigTest {
+
+    @Mock
+    Logger logger;
 
     ApplicationConfig underTest;
 
@@ -31,14 +35,14 @@ public class ApplicationConfigTest {
 
     @Test
     void givenStartupOk_whenEnvironmentReader_thenEnvironmentReaderReturned() {
-        EnvironmentReader result = underTest.environmentReader();
+        EnvironmentReader result = underTest.environmentReader(logger);
 
         assertThat(result, is(notNullValue()));
     }
 
     @Test
     void givenStartupOk_whenObjectMapper_thenObjectMapperReturned() {
-        ObjectMapper result = underTest.objectMapper();
+        ObjectMapper result = underTest.objectMapper(logger);
 
         assertThat(result, is(notNullValue()));
     }

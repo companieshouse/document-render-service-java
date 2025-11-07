@@ -7,5 +7,9 @@ spring:
     path:
       prefix: /document-render-java
 
+  internal:
+    asset-registry:
+      url: http://document-render-assets-registry:5002
+
 server:
   port: 9191

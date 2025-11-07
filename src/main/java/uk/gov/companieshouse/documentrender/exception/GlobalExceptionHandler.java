@@ -31,6 +31,20 @@ public class GlobalExceptionHandler {
                 .build();
     }
 
+    @ExceptionHandler({TemplateNotAvailableException.class})
+    public ResponseEntity<ApiErrorResponse> handleTemplateNotAvailableException(final TemplateNotAvailableException e) {
+        logger.error("An %s was raised during processing!".formatted(e.getClass().getSimpleName()), e);
+
+        return ErrorResponseBuilder
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .withError("An assets registry exception occurred: %s".formatted(e.getMessage()),
+                        "handleTemplateNotAvailableException",
+                        "assets-registry",
+                        "get-template")
+                .build();
+    }
+
+
     @ExceptionHandler({BadRequestException.class})
     public ResponseEntity<ApiErrorResponse> handleBadRequestException(final BadRequestException e) {
         logger.error("An %s was raised during processing!".formatted(e.getClass().getSimpleName()), e);

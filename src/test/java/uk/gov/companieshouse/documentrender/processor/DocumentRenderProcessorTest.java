@@ -7,6 +7,8 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -26,7 +28,14 @@ public class DocumentRenderProcessorTest {
 
     @Test
     void shouldRenderDocument() throws IOException {
-        Resource result = underTest.render();
+        Map<String, String> headers = new HashMap<>();
+        headers.put("templateName", "1");
+        headers.put("assetId", "1");
+        headers.put("Accept", "application/json");
+        headers.put("Content-Type", "application/json");
+        headers.put("Location", "s3-bucket");
+
+        Resource result = underTest.render(headers);
 
         verify(logger, times(1)).trace("render() method called.");
 

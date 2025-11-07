@@ -4,6 +4,11 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.companieshouse.documentrender.config.RestConfig.ACCEPT_HEADER;
+import static uk.gov.companieshouse.documentrender.config.RestConfig.ASSET_ID_HEADER;
+import static uk.gov.companieshouse.documentrender.config.RestConfig.CONTENT_TYPE_HEADER;
+import static uk.gov.companieshouse.documentrender.config.RestConfig.LOCATION_HEADER;
+import static uk.gov.companieshouse.documentrender.config.RestConfig.TEMPLATE_NAME_HEADER;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
@@ -21,10 +26,12 @@ import org.springframework.util.MultiValueMap;
 import uk.gov.companieshouse.api.error.ApiError;
 import uk.gov.companieshouse.api.error.ApiErrorResponse;
 import uk.gov.companieshouse.documentrender.model.Document;
+import uk.gov.companieshouse.documentrender.utils.DisabledIfDockerUnavailable;
 
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
+@DisabledIfDockerUnavailable
 public class DocumentRenderIntegrationTest {
 
     @Value("${spring.service.path.prefix}")
@@ -41,11 +48,11 @@ public class DocumentRenderIntegrationTest {
         var document = new Document();
 
         MultiValueMap<String, String> headerMap = new LinkedMultiValueMap<>();
-        headerMap.add("templateName", "1");
-        headerMap.add("assetId", "1");
-        headerMap.add("Accept", "application/json");
-        headerMap.add("Content-Type", "application/json");
-        headerMap.add("Location", "s3-bucket");
+        headerMap.add(TEMPLATE_NAME_HEADER, "letter-template-en-v1.htm");
+        headerMap.add(ASSET_ID_HEADER, "letters");
+        headerMap.add(ACCEPT_HEADER, "application/json");
+        headerMap.add(CONTENT_TYPE_HEADER, "application/json");
+        headerMap.add(LOCATION_HEADER, "s3-bucket");
 
         var headers = new HttpHeaders(headerMap);
 
@@ -69,11 +76,11 @@ public class DocumentRenderIntegrationTest {
         var document = new Document();
 
         MultiValueMap<String, String> headerMap = new LinkedMultiValueMap<>();
-        headerMap.add("templateName", "1");
-        headerMap.add("assetId", "1");
-        headerMap.add("Accept", "application/json");
-        headerMap.add("Content-Type", "application/json");
-        headerMap.add("Location", "s3-bucket");
+        headerMap.add(TEMPLATE_NAME_HEADER, "letter-template-en-v1.htm");
+        headerMap.add(ASSET_ID_HEADER, "letters");
+        headerMap.add(ACCEPT_HEADER, "application/json");
+        headerMap.add(CONTENT_TYPE_HEADER, "application/json");
+        headerMap.add(LOCATION_HEADER, "s3-bucket");
 
         var headers = new HttpHeaders(headerMap);
 
@@ -97,10 +104,10 @@ public class DocumentRenderIntegrationTest {
         var document = new Document();
 
         MultiValueMap<String, String> headerMap = new LinkedMultiValueMap<>();
-        headerMap.add("assetId", "1");
-        headerMap.add("Accept", "application/json");
-        headerMap.add("Content-Type", "application/json");
-        headerMap.add("Location", "s3-bucket");
+        headerMap.add(ASSET_ID_HEADER, "letters");
+        headerMap.add(ACCEPT_HEADER, "application/json");
+        headerMap.add(CONTENT_TYPE_HEADER, "application/json");
+        headerMap.add(LOCATION_HEADER, "s3-bucket");
 
         ApiError apiError = new ApiError();
         apiError.setError("An expected header ws not supplied with the request: Required header 'templateName' is missing");
@@ -135,11 +142,11 @@ public class DocumentRenderIntegrationTest {
         var document = new Document();
 
         MultiValueMap<String, String> headerMap = new LinkedMultiValueMap<>();
-        headerMap.add("templateName", "");
-        headerMap.add("assetId", "1");
-        headerMap.add("Accept", "application/json");
-        headerMap.add("Content-Type", "application/json");
-        headerMap.add("Location", "s3-bucket");
+        headerMap.add(TEMPLATE_NAME_HEADER, "");
+        headerMap.add(ASSET_ID_HEADER, "letters");
+        headerMap.add(ACCEPT_HEADER, "application/json");
+        headerMap.add(CONTENT_TYPE_HEADER, "application/json");
+        headerMap.add(LOCATION_HEADER, "s3-bucket");
 
         ApiError apiError = new ApiError();
         apiError.setError("An expected header ws not supplied with the request: Required header 'templateName' is missing");

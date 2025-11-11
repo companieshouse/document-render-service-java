@@ -25,12 +25,16 @@ public class ApplicationConfig {
     }
 
     @Bean
-    EnvironmentReader environmentReader() {
+    EnvironmentReader environmentReader(Logger logger) {
+        logger.trace("environmentReader() method called.");
+
         return new EnvironmentReaderImpl();
     }
 
     @Bean
-    public ObjectMapper objectMapper() {
+    ObjectMapper objectMapper(Logger logger) {
+        logger.trace("objectMapper() method called.");
+
         return new ObjectMapper()
                 .registerModule(new JavaTimeModule())
                 .setPropertyNamingStrategy(PropertyNamingStrategies.SNAKE_CASE)
@@ -38,4 +42,5 @@ public class ApplicationConfig {
                 .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
                 .configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
     }
+
 }

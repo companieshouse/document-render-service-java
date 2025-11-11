@@ -7,6 +7,11 @@ spring:
     path:
       prefix: /document-render-java
 
+  internal:
+    asset-registry:
+      url: ${TEMPLATE_REGISTRY_ADDR:http://document-render-assets-registry:5002}
+      #url: https://api.cidev.aws.chdev.org
+
 management:
   endpoints:
     web:
@@ -26,4 +31,4 @@ management:
       enabled: false
 
 server:
-  port: ${PORT:8080}
+  port: ${PORT:8181}

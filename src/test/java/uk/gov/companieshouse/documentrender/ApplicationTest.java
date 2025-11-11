@@ -9,7 +9,7 @@ import org.springframework.test.context.ActiveProfiles;
 @SpringBootTest(
         webEnvironment = WebEnvironment.DEFINED_PORT,
         properties = {
-                "server.port=8042"
+                "server.port=9191"
         }
 )
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)

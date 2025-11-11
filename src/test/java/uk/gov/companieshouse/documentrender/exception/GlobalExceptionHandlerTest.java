@@ -52,6 +52,28 @@ public class GlobalExceptionHandlerTest {
     }
 
     @Test
+    void givenMissingHeader_whenExceptionRaised_thenReturnApiErrorResponse() {
+        String exceptionMessage = "X-Custom-Header is missing";
+
+        ResponseEntity<ApiErrorResponse> response = underTest.handleMissingHeaderException(
+                new MissingHeaderException(exceptionMessage));
+
+        assertThat(response, is(notNullValue()));
+        assertThat(response.getStatusCode().value(), is(400));
+
+        ApiErrorResponse body = response.getBody();
+        assertThat(body, is(notNullValue()));
+        assertThat(body.getErrors().size(), is(1));
+
+        ApiError error = body.getErrors().getFirst();
+        assertThat(error.getError(), is("An expected header ws not supplied with the request: %s".formatted(exceptionMessage)));
+        assertThat(error.getLocation(), is("handleMissingHeaderException"));
+        assertThat(error.getType(), is("document-render"));
+        assertThat(error.getLocationType(), is("request-header"));
+        assertThat(error.getErrorValues(), is(nullValue()));
+    }
+
+    @Test
     void givenBadRequest_whenExceptionRaised_thenReturnApiErrorResponse() {
         ResponseEntity<ApiErrorResponse> response = underTest.handleBadRequestException(new BadRequestException());
 

@@ -6,9 +6,7 @@ import static uk.gov.companieshouse.documentrender.config.RestConfig.CONTENT_TYP
 import static uk.gov.companieshouse.documentrender.config.RestConfig.LOCATION_HEADER;
 import static uk.gov.companieshouse.documentrender.config.RestConfig.TEMPLATE_NAME_HEADER;
 
-import java.io.InputStream;
 import java.util.Map;
-import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;

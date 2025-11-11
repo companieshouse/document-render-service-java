@@ -54,7 +54,7 @@ public class DocumentRenderProcessorTest {
         byte[] result = underTest.render(headers);
 
         verify(logger, times(2)).trace(anyString());
-        verify(assetsRegistryService, times(1)).load(eq(assetID), eq(templateName));
+        verify(assetsRegistryService, times(1)).load(assetID, templateName);
 
         verifyNoInteractions(generateDocumentService);
 
@@ -78,7 +78,7 @@ public class DocumentRenderProcessorTest {
         });
 
         verify(logger, times(2)).trace(anyString());
-        verify(assetsRegistryService, times(1)).load(eq(assetID), eq(templateName));
+        verify(assetsRegistryService, times(1)).load(assetID, templateName);
 
         verifyNoInteractions(generateDocumentService);
 

@@ -18,15 +18,16 @@ public class RestConfig {
     public static final String CONTENT_TYPE_HEADER = "Content-Type";
     public static final String LOCATION_HEADER = "Location";
 
+    /**
+     * ResourceHttpMessageConverter resourceConverter = new ResourceHttpMessageConverter();
+     * resourceConverter.setSupportedMediaTypes(
+     *      Arrays.asList(MediaType.APPLICATION_OCTET_STREAM, MediaType.ALL)
+     * );
+     */
     @Bean(name = "assetsRegistryRestTemplate")
     RestTemplate assetsRegistryRestTemplate(@Value("${spring.internal.asset-registry.url}") String assetsRegistryUrl, Logger logger) {
         logger.trace("assetsRegistryRestTemplate(url=%s) method called.".formatted(assetsRegistryUrl));
 
-//        ResourceHttpMessageConverter resourceConverter = new ResourceHttpMessageConverter();
-//        resourceConverter.setSupportedMediaTypes(
-//                Arrays.asList(MediaType.APPLICATION_OCTET_STREAM, MediaType.ALL) // or include TEXT_HTML
-//        );
-//
         return restTemplateBuilder()
                 .rootUri(assetsRegistryUrl)
                 .messageConverters(new StringHttpMessageConverter(StandardCharsets.UTF_8))

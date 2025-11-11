@@ -88,4 +88,26 @@ public class GlobalExceptionHandlerTest {
         assertThat(error.getLocationType(), is("method"));
         assertThat(error.getErrorValues(), is(nullValue()));
     }
+
+    @Test
+    void givenTemplateNotAvailable_whenExceptionRaised_thenReturnApiErrorResponse() {
+        String exceptionMessage = "Template not found for name: letter-template-en-v1.htm and asset ID: letters";
+
+        ResponseEntity<ApiErrorResponse> response = underTest.handleTemplateNotAvailableException(
+                new TemplateNotAvailableException(exceptionMessage));
+
+        assertThat(response, is(notNullValue()));
+        assertThat(response.getStatusCode().value(), is(500));
+
+        ApiErrorResponse body = response.getBody();
+        assertThat(body, is(notNullValue()));
+        assertThat(body.getErrors().size(), is(1));
+
+        ApiError error = body.getErrors().getFirst();
+        assertThat(error.getError(), is("An assets registry exception occurred: %s".formatted(exceptionMessage)));
+        assertThat(error.getLocation(), is("handleTemplateNotAvailableException"));
+        assertThat(error.getType(), is("get-template"));
+        assertThat(error.getLocationType(), is("assets-registry"));
+        assertThat(error.getErrorValues(), is(nullValue()));
+    }
 }

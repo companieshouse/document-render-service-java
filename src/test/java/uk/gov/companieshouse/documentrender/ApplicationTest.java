@@ -5,12 +5,11 @@ import org.junit.jupiter.api.TestInstance;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.test.context.ActiveProfiles;
-import uk.gov.companieshouse.documentrender.utils.DisabledIfDockerUnavailable;
 
 @SpringBootTest(
         webEnvironment = WebEnvironment.DEFINED_PORT,
         properties = {
-                "server.port=8042"
+                "server.port=9191"
         }
 )
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)

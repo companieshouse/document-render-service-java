@@ -18,25 +18,18 @@ public class AssetsRegistryService {
         this.logger = logger;
     }
 
-    public Optional<String> load(final String templateName, final String assetID) {
-        logger.trace("load(templateName=%s, assetId=%s) method called.".formatted(templateName, assetID));
-        try {
-            String targetUri = "/assets/%s/templates/%s".formatted(assetID, templateName);
+    public Optional<String> load(final String assetID, final String templateName) {
+        logger.trace("load(assetId=%s, templateName=%s) method called.".formatted(assetID, templateName));
 
-            ResponseEntity<String> response = template.exchange(targetUri, HttpMethod.GET, null, String.class);
+        String targetUri = "/assets/%s/templates/%s".formatted(assetID, templateName);
 
-            if (!response.getStatusCode().is2xxSuccessful() || !response.hasBody()) {
-                logger.debug("Failed to load template from Assets Registry. Status code: %s".formatted(response.getStatusCode()));
-                return Optional.empty();
-            }
+        ResponseEntity<String> response = template.exchange(targetUri, HttpMethod.GET, null, String.class);
 
-            assert response.getBody() != null;
-
-            return Optional.of(response.getBody());
-
-        } catch(Exception ex) {
-            logger.error("IOException occurred while loading template: %s".formatted(ex.getMessage()));
+        if (!response.getStatusCode().is2xxSuccessful() || !response.hasBody()) {
+            logger.debug("Failed to load template from Assets Registry. Status code: %s".formatted(response.getStatusCode()));
             return Optional.empty();
         }
+
+        return Optional.ofNullable(response.getBody());
     }
 }

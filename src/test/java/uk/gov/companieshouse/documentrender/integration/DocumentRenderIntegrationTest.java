@@ -4,31 +4,34 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
-import static uk.gov.companieshouse.documentrender.config.RestConfig.ACCEPT_HEADER;
-import static uk.gov.companieshouse.documentrender.config.RestConfig.ASSET_ID_HEADER;
-import static uk.gov.companieshouse.documentrender.config.RestConfig.CONTENT_TYPE_HEADER;
-import static uk.gov.companieshouse.documentrender.config.RestConfig.LOCATION_HEADER;
 import static uk.gov.companieshouse.documentrender.config.RestConfig.TEMPLATE_NAME_HEADER;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import uk.gov.companieshouse.api.error.ApiError;
 import uk.gov.companieshouse.api.error.ApiErrorResponse;
 import uk.gov.companieshouse.documentrender.model.Document;
 import uk.gov.companieshouse.documentrender.utils.DisabledIfDockerUnavailable;
+import uk.gov.companieshouse.documentrender.utils.HeaderUtils;
 
-@SpringBootTest
+@SpringBootTest(
+        webEnvironment = WebEnvironment.DEFINED_PORT,
+        properties = {
+                "server.port=8042"
+        }
+)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
 @DisabledIfDockerUnavailable
@@ -47,13 +50,7 @@ public class DocumentRenderIntegrationTest {
     public void givenValidRequest_whenRenderDocumentCalled_thenReturnOK() throws Exception {
         var document = new Document();
 
-        MultiValueMap<String, String> headerMap = new LinkedMultiValueMap<>();
-        headerMap.add(TEMPLATE_NAME_HEADER, "letter-template-en-v1.htm");
-        headerMap.add(ASSET_ID_HEADER, "letters");
-        headerMap.add(ACCEPT_HEADER, "application/json");
-        headerMap.add(CONTENT_TYPE_HEADER, "application/json");
-        headerMap.add(LOCATION_HEADER, "s3-bucket");
-
+        var headerMap = HeaderUtils.createValidHeaderMap();
         var headers = new HttpHeaders(headerMap);
 
         String jsonBody = mapper.writeValueAsString(document);
@@ -75,13 +72,7 @@ public class DocumentRenderIntegrationTest {
     public void givenValidRequest_whenRenderAndStoreDocumentCalled_thenReturnOK() throws Exception {
         var document = new Document();
 
-        MultiValueMap<String, String> headerMap = new LinkedMultiValueMap<>();
-        headerMap.add(TEMPLATE_NAME_HEADER, "letter-template-en-v1.htm");
-        headerMap.add(ASSET_ID_HEADER, "letters");
-        headerMap.add(ACCEPT_HEADER, "application/json");
-        headerMap.add(CONTENT_TYPE_HEADER, "application/json");
-        headerMap.add(LOCATION_HEADER, "s3-bucket");
-
+        var headerMap = HeaderUtils.createValidHeaderMap();
         var headers = new HttpHeaders(headerMap);
 
         String jsonBody = mapper.writeValueAsString(document);
@@ -103,11 +94,8 @@ public class DocumentRenderIntegrationTest {
     public void givenMissingHeaders_whenRenderDocumentCalled_thenReturnBadRequest() throws Exception {
         var document = new Document();
 
-        MultiValueMap<String, String> headerMap = new LinkedMultiValueMap<>();
-        headerMap.add(ASSET_ID_HEADER, "letters");
-        headerMap.add(ACCEPT_HEADER, "application/json");
-        headerMap.add(CONTENT_TYPE_HEADER, "application/json");
-        headerMap.add(LOCATION_HEADER, "s3-bucket");
+        var headerMap = HeaderUtils.createValidHeaderMap();
+        headerMap.remove(TEMPLATE_NAME_HEADER);
 
         ApiError apiError = new ApiError();
         apiError.setError("An expected header ws not supplied with the request: Required header 'templateName' is missing");
@@ -141,12 +129,8 @@ public class DocumentRenderIntegrationTest {
     public void givenBlankHeader_whenRenderDocumentCalled_thenReturnBadRequest() throws Exception {
         var document = new Document();
 
-        MultiValueMap<String, String> headerMap = new LinkedMultiValueMap<>();
-        headerMap.add(TEMPLATE_NAME_HEADER, "");
-        headerMap.add(ASSET_ID_HEADER, "letters");
-        headerMap.add(ACCEPT_HEADER, "application/json");
-        headerMap.add(CONTENT_TYPE_HEADER, "application/json");
-        headerMap.add(LOCATION_HEADER, "s3-bucket");
+        var headerMap = HeaderUtils.createValidHeaderMap();
+        headerMap.set(TEMPLATE_NAME_HEADER, "");
 
         ApiError apiError = new ApiError();
         apiError.setError("An expected header ws not supplied with the request: Required header 'templateName' is missing");

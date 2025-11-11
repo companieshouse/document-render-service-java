@@ -9,7 +9,7 @@ spring:
 
   internal:
     asset-registry:
-      url: http://document-render-assets-registry:5002
+      url: ${TEMPLATE_REGISTRY_ADDR:https://api.cidev.aws.chdev.org}
 
 server:
   port: 9191

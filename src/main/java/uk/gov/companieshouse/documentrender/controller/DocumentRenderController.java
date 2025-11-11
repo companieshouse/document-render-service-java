@@ -6,6 +6,7 @@ import static uk.gov.companieshouse.documentrender.config.RestConfig.CONTENT_TYP
 import static uk.gov.companieshouse.documentrender.config.RestConfig.LOCATION_HEADER;
 import static uk.gov.companieshouse.documentrender.config.RestConfig.TEMPLATE_NAME_HEADER;
 
+import java.io.InputStream;
 import java.util.Map;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
@@ -37,37 +38,39 @@ public class DocumentRenderController {
 
     @RequireHeaders({TEMPLATE_NAME_HEADER, ASSET_ID_HEADER, ACCEPT_HEADER, CONTENT_TYPE_HEADER, LOCATION_HEADER})
     @PostMapping(value = "/", consumes = "application/json")
-    public ResponseEntity<Resource> renderDocument(@RequestBody Document document,
+    public ResponseEntity<byte[]> renderDocument(@RequestBody Document document,
             @RequestParam(value = "is_public", defaultValue = "false") boolean isPublic,
             @RequestHeader Map<String, String> allHeaders) {
         logger.trace("renderDocument(document=%s, isPublic=%s, headers=%s) method called."
                 .formatted(document, isPublic, allHeaders));
 
-        Resource documentStream = processor.render(allHeaders);
+        byte[] documentContent = processor.render(allHeaders);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
 
-        return ResponseEntity.status(HttpStatus.CREATED)
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
                 .headers(headers)
-                .body(documentStream);
+                .body(documentContent);
     }
 
     @RequireHeaders({TEMPLATE_NAME_HEADER, ASSET_ID_HEADER, ACCEPT_HEADER, CONTENT_TYPE_HEADER, LOCATION_HEADER})
     @PostMapping(value = "/store", consumes = "application/json")
-    public ResponseEntity<Resource> renderAndStoreDocument(@RequestBody Document document,
+    public ResponseEntity<byte[]> renderAndStoreDocument(@RequestBody Document document,
             @RequestParam(value = "is_public", defaultValue = "false") boolean isPublic,
             @RequestHeader Map<String, String> allHeaders) {
         logger.trace("renderAndStoreDocument(document=%s, isPublic=%s, headers=%s) method called."
                 .formatted(document, isPublic, allHeaders));
 
-        Resource documentStream = processor.render(allHeaders);
+        byte[] documentContent = processor.render(allHeaders);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
 
-        return ResponseEntity.status(HttpStatus.CREATED)
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
                 .headers(headers)
-                .body(documentStream);
+                .body(documentContent);
     }
 }

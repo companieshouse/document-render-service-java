@@ -57,9 +57,12 @@ public class DocumentRenderProcessor {
         logger.debug("Generating document with ACL: %s".formatted(accessControlList));
 
         S3Location s3Location = s3LocationParser.parse(modifiedHeaders, isPublic);
-        logger.debug("Parsed S3 location: %s".formatted(s3Location));
+        logger.debug("Parsed incoming Location: %s".formatted(s3Location));
 
-        return "http://s3.mock.%s/%s/%s".formatted(s3Location.getBucketName(), s3Location.getPath(), s3Location.getDocumentName());
+        String s3Path = "%s/%s/%s".formatted(s3Location.getBucketName(), s3Location.getPath(), s3Location.getDocumentName())
+                .replaceAll("/{2,}", "/");;
+
+        return "s3://%s".formatted(s3Path);
     }
 
     /**

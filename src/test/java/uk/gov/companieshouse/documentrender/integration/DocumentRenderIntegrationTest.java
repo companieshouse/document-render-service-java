@@ -3,6 +3,7 @@ package uk.gov.companieshouse.documentrender.integration;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static uk.gov.companieshouse.documentrender.config.RestConfig.TEMPLATE_NAME_HEADER;
 
@@ -47,8 +48,8 @@ public class DocumentRenderIntegrationTest {
     private MockMvc mockMvc;
 
     @Test
-    public void givenValidRequest_whenRenderDocumentCalled_thenReturnOK() throws Exception {
-        var headers = HeaderUtils.createHttpHeaders();
+    public void givenValidRequest_whenRenderCalled_thenReturnOK() throws Exception {
+        var headers = HeaderUtils.createHttpHeadersForPDF();
         var request = DocumentUtils.createValidDocument();
 
         String jsonBody = mapper.writeValueAsString(request);
@@ -67,28 +68,8 @@ public class DocumentRenderIntegrationTest {
     }
 
     @Test
-    public void givenValidRequest_whenRenderAndStoreDocumentCalled_thenReturnOK() throws Exception {
-        var headers = HeaderUtils.createHttpHeaders();
-        var request = DocumentUtils.createValidDocument();
-
-        String jsonBody = mapper.writeValueAsString(request);
-
-        mockMvc.perform(
-                        post("%s/store".formatted(servicePath))
-                                .headers(headers)
-                                .header("X-Request-Id", "my-x-request-id")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(jsonBody)
-                                .accept(MediaType.APPLICATION_JSON)
-                )
-                .andDo(print())
-                .andExpect(status().isCreated())
-        ;
-    }
-
-    @Test
-    public void givenMissingHeaders_whenRenderDocumentCalled_thenReturnBadRequest() throws Exception {
-        var headerMap = HeaderUtils.createValidHeaderMap();
+    public void givenMissingHeaders_whenRenderCalled_thenReturnBadRequest() throws Exception {
+        var headerMap = HeaderUtils.createValidHeaderMapForPDF();
         headerMap.remove(TEMPLATE_NAME_HEADER);
 
         var request = DocumentUtils.createValidDocument();
@@ -122,8 +103,8 @@ public class DocumentRenderIntegrationTest {
     }
 
     @Test
-    public void givenBlankHeader_whenRenderDocumentCalled_thenReturnBadRequest() throws Exception {
-        var headerMap = HeaderUtils.createValidHeaderMap();
+    public void givenBlankHeader_whenRenderCalled_thenReturnBadRequest() throws Exception {
+        var headerMap = HeaderUtils.createValidHeaderMapForPDF();
         headerMap.set(TEMPLATE_NAME_HEADER, "");
 
         var request = DocumentUtils.createValidDocument();
@@ -158,4 +139,71 @@ public class DocumentRenderIntegrationTest {
 //                .andExpect(jsonPath("$.description").value("A test item"))
         ;
     }
+
+    @Test
+    public void givenValidRequestPDF_whenStoreCalled_thenReturnOK() throws Exception {
+        var headers = HeaderUtils.createHttpHeadersForPDF();
+        var request = DocumentUtils.createValidDocument();
+
+        String jsonBody = mapper.writeValueAsString(request);
+
+        mockMvc.perform(
+                        post("%s/store".formatted(servicePath))
+                                .headers(headers)
+                                .header("X-Request-Id", "my-x-request-id")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonBody)
+                                .accept(MediaType.APPLICATION_PDF)
+                )
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andExpect(content().contentType(MediaType.APPLICATION_OCTET_STREAM))
+                .andExpect(header().exists("Location"))
+        ;
+    }
+
+    @Test
+    public void givenValidRequestHTML_whenStoreCalled_thenReturnOK() throws Exception {
+        var headers = HeaderUtils.createHttpHeadersForHTML();
+        var request = DocumentUtils.createValidDocument();
+
+        String jsonBody = mapper.writeValueAsString(request);
+
+        mockMvc.perform(
+                        post("%s/store".formatted(servicePath))
+                                .headers(headers)
+                                .header("X-Request-Id", "my-x-request-id")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonBody)
+                                .accept(MediaType.TEXT_HTML)
+                )
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andExpect(content().contentType(MediaType.APPLICATION_OCTET_STREAM))
+                .andExpect(header().exists("Location"))
+        ;
+    }
+
+    @Test
+    public void givenInvalidRequest_whenStoreCalled_thenReturnOK() throws Exception {
+        var headers = HeaderUtils.createHttpHeadersForPDF();
+        var request = DocumentUtils.createValidDocument();
+
+        String jsonBody = mapper.writeValueAsString(request);
+
+        mockMvc.perform(
+                        post("%s/store".formatted(servicePath))
+                                .headers(headers)
+                                .header("X-Request-Id", "my-x-request-id")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonBody)
+                                .accept(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isInternalServerError())
+                .andExpect(header().doesNotExist("Location"))
+
+        ;
+    }
+
 }

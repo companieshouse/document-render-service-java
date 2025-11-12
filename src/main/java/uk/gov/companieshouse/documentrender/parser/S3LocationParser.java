@@ -1,18 +1,19 @@
 package uk.gov.companieshouse.documentrender.parser;
 
-import static org.springframework.http.MediaType.APPLICATION_PDF_VALUE;
-import static org.springframework.http.MediaType.TEXT_HTML_VALUE;
+import static org.springframework.http.MediaType.APPLICATION_PDF;
+import static org.springframework.http.MediaType.TEXT_HTML;
 import static uk.gov.companieshouse.documentrender.config.RestConfig.ACCEPT_HEADER;
-import static uk.gov.companieshouse.documentrender.config.RestConfig.CONTENT_TYPE_HEADER;
 import static uk.gov.companieshouse.documentrender.config.RestConfig.LOCATION_HEADER;
 import static uk.gov.companieshouse.documentrender.config.RestConfig.TEMPLATE_NAME_HEADER;
 import static uk.gov.companieshouse.documentrender.utils.S3PathUtils.hasFileExtension;
 
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.regex.Pattern;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Component;
+import uk.gov.companieshouse.documentrender.exception.UnsupportedMimeTypeException;
 import uk.gov.companieshouse.logging.Logger;
 
 @Component
@@ -21,43 +22,44 @@ public class S3LocationParser {
     private static final Pattern LOCATION_REGEX = Pattern.compile("^s3://([a-zA-Z0-9\\-_.]+)/(.*)$");
     private static final Pattern LOCATION_WITH_FILENAME_REGEX = Pattern.compile("^s3://([a-zA-Z0-9\\-_.]+)/(.+)/(.+\\..+)$");
 
+    private static final List<MediaType> SUPPORTED_MEDIA_TYPES = List.of(
+            APPLICATION_PDF, TEXT_HTML
+    );
+
     private final Logger logger;
 
     public S3LocationParser(final Logger logger) {
         this.logger = logger;
     }
 
-    // s3://development-eu-west-2.document-render-service.ch.gov.uk/cidev/company-report/
-    // s3://development-eu-west-2.document-render-service.ch.gov.uk/cidev/company-report/filename.html
     public S3Location parse(final Map<String, String> headers, final Boolean isPublic) {
         logger.trace("parse(headers=%s, public=%s) method called.".formatted(headers, isPublic));
 
-        String contentType = headers.get(CONTENT_TYPE_HEADER);
-        String accept = headers.get(ACCEPT_HEADER);
-
-        MediaType mediaType = getMimeType(contentType, accept);
-
+        MediaType mediaType = getMimeType(headers.get(ACCEPT_HEADER));
         return parseStoreLocation(headers, mediaType);
     }
 
-    private MediaType getMimeType(final String contentType, final String accept) {
-        logger.trace("getMimeType(contentType=%s, accept=%s) method called.".formatted(contentType, accept));
+    private MediaType getMimeType(final String accept) {
+        logger.trace("getMimeType(accept=%s) method called.".formatted(accept));
 
-        if(contentType.equals(TEXT_HTML_VALUE) && accept.equals(APPLICATION_PDF_VALUE)) {
-            return MediaType.APPLICATION_PDF;
+        // Parse and validate the Accept header, to determine the requested media type.
+        MediaType acceptMediaType = MediaType.parseMediaType(accept);
 
-        } else if(contentType.equals(TEXT_HTML_VALUE) && accept.equals(TEXT_HTML_VALUE)) {
-            return MediaType.TEXT_HTML;
-
-        } else {
-            logger.info("Unsupported mime type, error will be thrown: %s" + contentType);
-            //throw new UnsupportedMimeTypeException("Unsupported rendering options: (Content-Type=%s, Accept=%s)".formatted(contentType, accept));
+        // Check if the requested media type is supported.
+        if(!SUPPORTED_MEDIA_TYPES.contains(acceptMediaType)) {
+            logger.info("Unsupported mime type, error will be thrown: '%s'" + accept);
+            throw new UnsupportedMimeTypeException("Unsupported Mime Type for rendering: '%s'".formatted(accept));
         }
 
-        // TODO: We need to remove this defaulting when we have proper error handling in place.
-        return MediaType.TEXT_HTML;
+        return acceptMediaType;
     }
 
+    /**
+     * Parse the S3 location from the (Location) headers and mime type. Examples of a location are:
+     * - s3://s3-bucket.mock.bucket-name/path/company-report/
+     * - s3://s3-bucket.mock.bucket-name/path/company-report/filename.html
+     * @return S3Location object containing bucket name, path, and document name.
+     */
     private S3Location parseStoreLocation(final Map<String, String> headers, final MediaType mimeType) {
         logger.trace("parseStoreLocation(headers=%s, mimeType=%s) method called.".formatted(headers, mimeType));
 
@@ -79,7 +81,7 @@ public class S3LocationParser {
         } else {
             var matcher = LOCATION_REGEX.matcher(s3Path);
             if(matcher.matches()) {
-                String extension = mimeType.equals(MediaType.APPLICATION_PDF) ? ".pdf" : ".html";
+                String extension = mimeType.equals(APPLICATION_PDF) ? ".pdf" : ".html";
                 String uuid = UUID.randomUUID().toString();
 
 

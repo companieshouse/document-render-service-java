@@ -12,6 +12,7 @@ import static org.mockito.Mockito.when;
 import static uk.gov.companieshouse.documentrender.config.RestConfig.ASSET_ID_HEADER;
 import static uk.gov.companieshouse.documentrender.config.RestConfig.TEMPLATE_NAME_HEADER;
 
+import java.util.Map;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -47,12 +48,11 @@ public class DocumentRenderProcessorTest {
     DocumentRenderProcessor underTest;
 
     @Test
-    void givenAssetExists_whenPublicRenderCalled_thenReturnTemplateContent() {
+    void givenAssetExists_whenRenderCalled_thenReturnTemplateContent() {
         // Arrange:
         String assetContent = "<html>Document</html>";
 
-        HttpHeaders headers = HeaderUtils.createHttpHeaders();
-
+        HttpHeaders headers = HeaderUtils.createHttpHeadersForPDF();
         String assetID = headers.asSingleValueMap().get(ASSET_ID_HEADER);
         String templateName = headers.asSingleValueMap().get(TEMPLATE_NAME_HEADER);
 
@@ -76,11 +76,11 @@ public class DocumentRenderProcessorTest {
     }
 
     @Test
-    void givenAssetNotExists_whenPublicRenderCalled_thenRaiseException() {
+    void givenAssetNotExists_whenRenderCalled_thenRaiseException() {
         // Arrange:
         String assetContent = null;
 
-        HttpHeaders headers = HeaderUtils.createHttpHeaders();
+        HttpHeaders headers = HeaderUtils.createHttpHeadersForPDF();
 
         String assetID = headers.asSingleValueMap().get(ASSET_ID_HEADER);
         String templateName = headers.asSingleValueMap().get(TEMPLATE_NAME_HEADER);
@@ -103,5 +103,61 @@ public class DocumentRenderProcessorTest {
 
         assertThat(expectedException, is(notNullValue()));
         assertThat(expectedException.getMessage(), is("Template not found for name: %s and asset ID: %s".formatted(templateName, assetID)));
+    }
+
+    @Test
+    void givenDocument_whenStoreWithPublicCalled_thenReturnLocation() {
+        // Arrange:
+        byte[] documentContent = "<html>Document</html>".getBytes();
+
+        String bucketName = "local-test.document-render-service.ch.gov.uk";
+        String path = "local/company-report/";
+        String documentName = "letter-template-en-v1.htm";
+
+        HttpHeaders headers = HeaderUtils.createHttpHeadersForPDF();
+        Map<String, String> headerMap = headers.toSingleValueMap();
+
+        when(s3LocationParser.parse(headerMap, true))
+                .thenReturn(new S3LocationParser.S3Location(bucketName, path, documentName));
+
+        // Act:
+        String result = underTest.store(headers, documentContent, true);
+
+        // Assert:
+        verify(logger, times(2)).trace(anyString());
+        verify(s3LocationParser, times(1)).parse(headerMap, true);
+
+        verifyNoInteractions(generateDocumentService);
+
+        assertThat(result, is(notNullValue()));
+        assertThat(result, is("s3://%s/%s%s".formatted(bucketName, path, documentName)));
+    }
+
+    @Test
+    void givenDocument_whenStoreWithPrivateCalled_thenReturnLocation() {
+        // Arrange:
+        byte[] documentContent = "<html>Document</html>".getBytes();
+
+        String bucketName = "local-test.document-render-service.ch.gov.uk";
+        String path = "local/company-report/";
+        String documentName = "letter-template-en-v1.htm";
+
+        HttpHeaders headers = HeaderUtils.createHttpHeadersForPDF();
+        Map<String, String> headerMap = headers.toSingleValueMap();
+
+        when(s3LocationParser.parse(headerMap, false))
+                .thenReturn(new S3LocationParser.S3Location(bucketName, path, documentName));
+
+        // Act:
+        String result = underTest.store(headers, documentContent, false);
+
+        // Assert:
+        verify(logger, times(2)).trace(anyString());
+        verify(s3LocationParser, times(1)).parse(headerMap, false);
+
+        verifyNoInteractions(generateDocumentService);
+
+        assertThat(result, is(notNullValue()));
+        assertThat(result, is("s3://%s/%s%s".formatted(bucketName, path, documentName)));
     }
 }

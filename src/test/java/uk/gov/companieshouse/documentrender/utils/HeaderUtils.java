@@ -13,23 +13,43 @@ import org.springframework.util.MultiValueMap;
 
 public class HeaderUtils {
 
-    public static HttpHeaders createHttpHeaders() {
+    public static HttpHeaders createHttpHeadersForPDF() {
         HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setAll(createValidHeaders());
+        httpHeaders.setAll(createValidHeadersForPDF());
         return httpHeaders;
     }
 
-    public static Map<String, String> createValidHeaders() {
-        return createValidHeaderMap().toSingleValueMap();
+    public static HttpHeaders createHttpHeadersForHTML() {
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setAll(createValidHeadersForHTML());
+        return httpHeaders;
     }
 
-    public static MultiValueMap<String, String> createValidHeaderMap() {
+    public static Map<String, String> createValidHeadersForPDF() {
+        return createValidHeaderMapForPDF().toSingleValueMap();
+    }
+
+    public static Map<String, String> createValidHeadersForHTML() {
+        return createValidHeaderMapForHTML().toSingleValueMap();
+    }
+
+    public static MultiValueMap<String, String> createValidHeaderMapForPDF() {
         MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
         headers.add(ASSET_ID_HEADER, "letters");
         headers.add(TEMPLATE_NAME_HEADER, "letter-template-en-v1.htm");
         headers.add(ACCEPT_HEADER, "application/pdf");
         headers.add(CONTENT_TYPE_HEADER, "application/json");
         headers.add(LOCATION_HEADER, "s3://local-test.document-render-service.ch.gov.uk/local/company-report/");
+        return headers;
+    }
+
+    public static MultiValueMap<String, String> createValidHeaderMapForHTML() {
+        MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+        headers.add(ASSET_ID_HEADER, "letters");
+        headers.add(TEMPLATE_NAME_HEADER, "letter-template-en-v1.htm");
+        headers.add(ACCEPT_HEADER, "text/html");
+        headers.add(CONTENT_TYPE_HEADER, "application/json");
+        headers.add(LOCATION_HEADER, "s3://local-test.document-render-service.ch.gov.uk/local/company-report/report.html");
         return headers;
     }
 }

@@ -39,7 +39,7 @@ public class DocumentRenderControllerTest {
 
     @Test
     void givenValidPublicRequest_whenRenderDocumentCalled_thenOkReturned() {
-        HttpHeaders headers = HeaderUtils.createHttpHeaders();
+        HttpHeaders headers = HeaderUtils.createHttpHeadersForPDF();
         Document document = DocumentUtils.createValidDocument();
         boolean isPublic = true;
 
@@ -53,7 +53,7 @@ public class DocumentRenderControllerTest {
 
     @Test
     void givenValidPrivateRequest_whenRenderDocumentCalled_thenOkReturned() {
-        HttpHeaders headers = HeaderUtils.createHttpHeaders();
+        HttpHeaders headers = HeaderUtils.createHttpHeadersForPDF();
         Document document = DocumentUtils.createValidDocument();
         boolean isPublic = false;
 
@@ -70,7 +70,7 @@ public class DocumentRenderControllerTest {
         byte[] documentContent = "<html><body>Test Document</body></html>".getBytes();
         String s3Location = URI.create("s3://bucket/path/document.html").toString();
 
-        HttpHeaders headers = HeaderUtils.createHttpHeaders();
+        HttpHeaders headers = HeaderUtils.createHttpHeadersForPDF();
         Document document = DocumentUtils.createValidDocument();
         boolean isPublic = true;
 
@@ -91,7 +91,7 @@ public class DocumentRenderControllerTest {
         byte[] documentContent = "<html><body>Test Document</body></html>".getBytes();
         String s3Location = URI.create("s3://bucket/path/document.html").toString();
 
-        HttpHeaders headers = HeaderUtils.createHttpHeaders();
+        HttpHeaders headers = HeaderUtils.createHttpHeadersForPDF();
         Document document = DocumentUtils.createValidDocument();
         boolean isPublic = false;
 

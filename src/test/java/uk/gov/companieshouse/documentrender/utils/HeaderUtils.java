@@ -7,10 +7,17 @@ import static uk.gov.companieshouse.documentrender.config.RestConfig.LOCATION_HE
 import static uk.gov.companieshouse.documentrender.config.RestConfig.TEMPLATE_NAME_HEADER;
 
 import java.util.Map;
+import org.springframework.http.HttpHeaders;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
 public class HeaderUtils {
+
+    public static HttpHeaders createHttpHeaders() {
+        HttpHeaders httpHeaders = new HttpHeaders();
+        httpHeaders.setAll(createValidHeaders());
+        return httpHeaders;
+    }
 
     public static Map<String, String> createValidHeaders() {
         return createValidHeaderMap().toSingleValueMap();
@@ -20,9 +27,9 @@ public class HeaderUtils {
         MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
         headers.add(ASSET_ID_HEADER, "letters");
         headers.add(TEMPLATE_NAME_HEADER, "letter-template-en-v1.htm");
-        headers.add(ACCEPT_HEADER, "application/json");
+        headers.add(ACCEPT_HEADER, "application/pdf");
         headers.add(CONTENT_TYPE_HEADER, "application/json");
-        headers.add(LOCATION_HEADER, "s3-bucket");
+        headers.add(LOCATION_HEADER, "s3://local-test.document-render-service.ch.gov.uk/local/company-report/");
         return headers;
     }
 }

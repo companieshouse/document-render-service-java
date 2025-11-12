@@ -44,6 +44,19 @@ public class GlobalExceptionHandler {
                 .build();
     }
 
+    @ExceptionHandler({UnsupportedMimeTypeException.class})
+    public ResponseEntity<ApiErrorResponse> handleUnsupportedMimeTypeException(final UnsupportedMimeTypeException e) {
+        logger.error("An UnsupportedMimeTypeException was raised during processing!", e);
+
+        return ErrorResponseBuilder
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .withError("An unexpected content-type or accept header was detected: %s".formatted(e.getMessage()),
+                        "handleUnsupportedMimeTypeException",
+                        "parse-location",
+                        "get-location")
+                .build();
+    }
+
 
     @ExceptionHandler({BadRequestException.class})
     public ResponseEntity<ApiErrorResponse> handleBadRequestException(final BadRequestException e) {

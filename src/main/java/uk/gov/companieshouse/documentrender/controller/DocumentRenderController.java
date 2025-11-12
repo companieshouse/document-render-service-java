@@ -6,7 +6,7 @@ import static uk.gov.companieshouse.documentrender.config.RestConfig.CONTENT_TYP
 import static uk.gov.companieshouse.documentrender.config.RestConfig.LOCATION_HEADER;
 import static uk.gov.companieshouse.documentrender.config.RestConfig.TEMPLATE_NAME_HEADER;
 
-import java.util.Map;
+import java.net.URI;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -35,40 +35,38 @@ public class DocumentRenderController {
     }
 
     @RequireHeaders({TEMPLATE_NAME_HEADER, ASSET_ID_HEADER, ACCEPT_HEADER, CONTENT_TYPE_HEADER, LOCATION_HEADER})
-    @PostMapping(value = "/", consumes = "application/json")
-    public ResponseEntity<byte[]> renderDocument(@RequestBody Document document,
-            @RequestParam(value = "is_public", defaultValue = "false") boolean isPublic,
-            @RequestHeader Map<String, String> allHeaders) {
-        logger.trace("renderDocument(document=%s, isPublic=%s, headers=%s) method called."
-                .formatted(document, isPublic, allHeaders));
+    @PostMapping(value = "/", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<byte[]> render(@RequestHeader HttpHeaders headers, @RequestBody Document document,
+            @RequestParam(value = "is_public", defaultValue = "false") boolean isPublic) {
+        logger.trace("render(document=%s, isPublic=%s) method called.".formatted(document, isPublic));
 
-        byte[] documentContent = processor.render(allHeaders);
+        byte[] content = processor.render(headers, document);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.setContentType(MediaType.APPLICATION_OCTET_STREAM);
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .headers(headers)
-                .body(documentContent);
+                .headers(responseHeaders)
+                .body(content);
     }
 
     @RequireHeaders({TEMPLATE_NAME_HEADER, ASSET_ID_HEADER, ACCEPT_HEADER, CONTENT_TYPE_HEADER, LOCATION_HEADER})
-    @PostMapping(value = "/store", consumes = "application/json")
-    public ResponseEntity<byte[]> renderAndStoreDocument(@RequestBody Document document,
-            @RequestParam(value = "is_public", defaultValue = "false") boolean isPublic,
-            @RequestHeader Map<String, String> allHeaders) {
-        logger.trace("renderAndStoreDocument(document=%s, isPublic=%s, headers=%s) method called."
-                .formatted(document, isPublic, allHeaders));
+    @PostMapping(value = "/store", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<byte[]> store(@RequestHeader HttpHeaders headers, @RequestBody Document document,
+            @RequestParam(value = "is_public", defaultValue = "false") boolean isPublic) {
+        logger.trace("store(document=%s, isPublic=%s) method called.".formatted(document, isPublic));
 
-        byte[] documentContent = processor.render(allHeaders);
+        byte[] content = processor.render(headers, document);
+        String location = processor.store(headers, content, isPublic);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        HttpHeaders responseHeaders = new HttpHeaders();
+        responseHeaders.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        responseHeaders.setLocation(URI.create(location));
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .headers(headers)
-                .body(documentContent);
+                .headers(responseHeaders)
+                .body(content);
     }
 }

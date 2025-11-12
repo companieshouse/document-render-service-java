@@ -19,11 +19,14 @@ public class RequireHeadersAspect {
 
     @Before("@annotation(requireHeaders)")
     public void checkHeaders(final JoinPoint jp, final RequireHeaders requireHeaders) {
+
+        // Iterate through the required headers and check if they are present in the request
         for (String header : requireHeaders.value()) {
             String value = request.getHeader(header);
             if (value == null || value.isBlank()) {
                 throw new MissingHeaderException("Required header '" + header + "' is missing");
             }
         }
+
     }
 }

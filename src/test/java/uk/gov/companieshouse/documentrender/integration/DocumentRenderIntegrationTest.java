@@ -21,8 +21,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.companieshouse.api.error.ApiError;
 import uk.gov.companieshouse.api.error.ApiErrorResponse;
-import uk.gov.companieshouse.documentrender.model.Document;
 import uk.gov.companieshouse.documentrender.utils.DisabledIfDockerUnavailable;
+import uk.gov.companieshouse.documentrender.utils.DocumentUtils;
 import uk.gov.companieshouse.documentrender.utils.HeaderUtils;
 
 @SpringBootTest(
@@ -48,12 +48,10 @@ public class DocumentRenderIntegrationTest {
 
     @Test
     public void givenValidRequest_whenRenderDocumentCalled_thenReturnOK() throws Exception {
-        var document = new Document();
+        var headers = HeaderUtils.createHttpHeaders();
+        var request = DocumentUtils.createValidDocument();
 
-        var headerMap = HeaderUtils.createValidHeaderMap();
-        var headers = new HttpHeaders(headerMap);
-
-        String jsonBody = mapper.writeValueAsString(document);
+        String jsonBody = mapper.writeValueAsString(request);
 
         mockMvc.perform(
                         post("%s/".formatted(servicePath))
@@ -70,12 +68,10 @@ public class DocumentRenderIntegrationTest {
 
     @Test
     public void givenValidRequest_whenRenderAndStoreDocumentCalled_thenReturnOK() throws Exception {
-        var document = new Document();
+        var headers = HeaderUtils.createHttpHeaders();
+        var request = DocumentUtils.createValidDocument();
 
-        var headerMap = HeaderUtils.createValidHeaderMap();
-        var headers = new HttpHeaders(headerMap);
-
-        String jsonBody = mapper.writeValueAsString(document);
+        String jsonBody = mapper.writeValueAsString(request);
 
         mockMvc.perform(
                         post("%s/store".formatted(servicePath))
@@ -92,10 +88,10 @@ public class DocumentRenderIntegrationTest {
 
     @Test
     public void givenMissingHeaders_whenRenderDocumentCalled_thenReturnBadRequest() throws Exception {
-        var document = new Document();
-
         var headerMap = HeaderUtils.createValidHeaderMap();
         headerMap.remove(TEMPLATE_NAME_HEADER);
+
+        var request = DocumentUtils.createValidDocument();
 
         ApiError apiError = new ApiError();
         apiError.setError("An expected header ws not supplied with the request: Required header 'templateName' is missing");
@@ -108,7 +104,7 @@ public class DocumentRenderIntegrationTest {
 
         var headers = new HttpHeaders(headerMap);
 
-        String jsonBody = mapper.writeValueAsString(document);
+        String jsonBody = mapper.writeValueAsString(request);
         String jsonError = mapper.writeValueAsString(apiErrorResponse);
 
         mockMvc.perform(
@@ -127,10 +123,10 @@ public class DocumentRenderIntegrationTest {
 
     @Test
     public void givenBlankHeader_whenRenderDocumentCalled_thenReturnBadRequest() throws Exception {
-        var document = new Document();
-
         var headerMap = HeaderUtils.createValidHeaderMap();
         headerMap.set(TEMPLATE_NAME_HEADER, "");
+
+        var request = DocumentUtils.createValidDocument();
 
         ApiError apiError = new ApiError();
         apiError.setError("An expected header ws not supplied with the request: Required header 'templateName' is missing");
@@ -143,7 +139,7 @@ public class DocumentRenderIntegrationTest {
 
         var headers = new HttpHeaders(headerMap);
 
-        String jsonBody = mapper.writeValueAsString(document);
+        String jsonBody = mapper.writeValueAsString(request);
         String jsonError = mapper.writeValueAsString(apiErrorResponse);
 
         mockMvc.perform(

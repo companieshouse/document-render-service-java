@@ -5,16 +5,19 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import java.util.Map;
+import java.net.URI;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import uk.gov.companieshouse.documentrender.model.Document;
 import uk.gov.companieshouse.documentrender.processor.DocumentRenderProcessor;
+import uk.gov.companieshouse.documentrender.utils.DocumentUtils;
 import uk.gov.companieshouse.documentrender.utils.HeaderUtils;
 import uk.gov.companieshouse.logging.Logger;
 
@@ -36,13 +39,13 @@ public class DocumentRenderControllerTest {
 
     @Test
     void givenValidPublicRequest_whenRenderDocumentCalled_thenOkReturned() {
-        Map<String, String> headers = HeaderUtils.createValidHeaders();
+        HttpHeaders headers = HeaderUtils.createHttpHeaders();
+        Document document = DocumentUtils.createValidDocument();
+        boolean isPublic = true;
 
-        Document document = new Document();
+        ResponseEntity<byte[]> response = underTest.render(headers, document, isPublic);
 
-        ResponseEntity<byte[]> response = underTest.renderDocument(document, true, headers);
-
-        verify(documentRenderProcessor, times(1)).render(headers);
+        verify(documentRenderProcessor, times(1)).render(headers, document);
 
         assertThat(response, is(notNullValue()));
         assertThat(response.getStatusCode().value(), is(201));
@@ -50,41 +53,55 @@ public class DocumentRenderControllerTest {
 
     @Test
     void givenValidPrivateRequest_whenRenderDocumentCalled_thenOkReturned() {
-        Map<String, String> headers = HeaderUtils.createValidHeaders();
+        HttpHeaders headers = HeaderUtils.createHttpHeaders();
+        Document document = DocumentUtils.createValidDocument();
+        boolean isPublic = false;
 
-        Document document = new Document();
+        ResponseEntity<byte[]> response = underTest.render(headers, document, isPublic);
 
-        ResponseEntity<byte[]> response = underTest.renderDocument(document, false, headers);
-
-        verify(documentRenderProcessor, times(1)).render(headers);
-
-        assertThat(response, is(notNullValue()));
-        assertThat(response.getStatusCode().value(), is(201));
-    }
-
-    @Test
-    void givenValidPublicRequest_whenRenderAndStoreDocumentCalled_thenOkReturned() {
-        Map<String, String> headers = HeaderUtils.createValidHeaders();
-
-        Document document = new Document();
-
-        ResponseEntity<byte[]> response = underTest.renderAndStoreDocument(document, true, headers);
-
-        verify(documentRenderProcessor, times(1)).render(headers);
+        verify(documentRenderProcessor, times(1)).render(headers, document);
 
         assertThat(response, is(notNullValue()));
         assertThat(response.getStatusCode().value(), is(201));
     }
 
     @Test
-    void givenValidPrivateRequest_whenRenderAndStoreDocumentCalled_thenOkReturned() {
-        Map<String, String> headers = HeaderUtils.createValidHeaders();
+    void givenValidPublicRequest_whenStoreDocumentCalled_thenOkReturned() {
+        byte[] documentContent = "<html><body>Test Document</body></html>".getBytes();
+        String s3Location = URI.create("s3://bucket/path/document.html").toString();
 
-        Document document = new Document();
+        HttpHeaders headers = HeaderUtils.createHttpHeaders();
+        Document document = DocumentUtils.createValidDocument();
+        boolean isPublic = true;
 
-        ResponseEntity<byte[]> response = underTest.renderAndStoreDocument(document, false, headers);
+        when(documentRenderProcessor.render(headers, document)).thenReturn(documentContent);
+        when(documentRenderProcessor.store(headers, documentContent, isPublic)).thenReturn(s3Location);
 
-        verify(documentRenderProcessor, times(1)).render(headers);
+        ResponseEntity<byte[]> response = underTest.store(headers, document, isPublic);
+
+        verify(documentRenderProcessor, times(1)).render(headers, document);
+        verify(documentRenderProcessor, times(1)).store(headers, documentContent, isPublic);
+
+        assertThat(response, is(notNullValue()));
+        assertThat(response.getStatusCode().value(), is(201));
+    }
+
+    @Test
+    void givenValidPrivateRequest_whenStoreDocumentCalled_thenOkReturned() {
+        byte[] documentContent = "<html><body>Test Document</body></html>".getBytes();
+        String s3Location = URI.create("s3://bucket/path/document.html").toString();
+
+        HttpHeaders headers = HeaderUtils.createHttpHeaders();
+        Document document = DocumentUtils.createValidDocument();
+        boolean isPublic = false;
+
+        when(documentRenderProcessor.render(headers, document)).thenReturn(documentContent);
+        when(documentRenderProcessor.store(headers, documentContent, isPublic)).thenReturn(s3Location);
+
+        ResponseEntity<byte[]> response = underTest.store(headers, document, isPublic);
+
+        verify(documentRenderProcessor, times(1)).render(headers, document);
+        verify(documentRenderProcessor, times(1)).store(headers, documentContent, isPublic);
 
         assertThat(response, is(notNullValue()));
         assertThat(response.getStatusCode().value(), is(201));

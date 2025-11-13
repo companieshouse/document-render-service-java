@@ -14,7 +14,7 @@ public class S3PathUtils {
      * If not a file (or no extension), returns Optional.empty().
      */
     public static Optional<String> getFileExtension(final String s3Path) {
-        if (s3Path == null) {
+        if (s3Path == null || s3Path.length() > 1024) {
             return Optional.empty();
         }
 

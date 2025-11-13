@@ -235,7 +235,7 @@ public class DocumentRenderIntegrationTest {
                 .andDo(print())
                 .andExpect(status().isInternalServerError())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(content().string(jsonError));
+                .andExpect(content().string(jsonError))
 //                .andExpect(jsonPath("$.errors").value(jsonError))
 //                .andExpect(jsonPath("$.description").value("A test item"))
         ;

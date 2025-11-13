@@ -7,68 +7,31 @@ import static org.hamcrest.Matchers.notNullValue;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-public class S3PathUtilsTest {
+class S3PathUtilsTest {
 
-    @Test
-    void givenPathWithExtension_whenGetFileExtensionCalled_thenReturnExtension() {
-        String s3Path = "s3://my-bucket/path/to/my-document.html";
-
+    @ParameterizedTest(name = "{index} => path=''{0}'', expectedExt={1}, present={2}")
+    @CsvSource({
+            "s3://my-bucket/path/to/my-document.html, html, true",
+            "s3://my-bucket/path/to/my-document, , false",
+            "null, , false",
+            " , , false",
+            "/, , false",
+            "/document., , false"
+    })
+    void givenVariousPaths_whenGetFileExtension_thenReturnResult(String s3Path, String expectedExt, boolean present) {
         Optional<String> result = S3PathUtils.getFileExtension(s3Path);
 
         assertThat(result, is(notNullValue()));
-        assertThat(result.isPresent(), is(true));
-        assertThat(result.get(), is("html"));
-    }
+        assertThat(result.isPresent(), is(present));
 
-    @Test
-    void givenPathWithoutExtension_whenGetFileExtensionCalled_thenReturnEmpty() {
-        String s3Path = "s3://my-bucket/path/to/my-document";
-
-        Optional<String> result = S3PathUtils.getFileExtension(s3Path);
-
-        assertThat(result, is(notNullValue()));
-        assertThat(result.isEmpty(), is(true));
-    }
-
-    @Test
-    void givenNullPath_whenGetFileExtensionCalled_thenReturnEmpty() {
-        Optional<String> result = S3PathUtils.getFileExtension(null);
-
-        assertThat(result, is(notNullValue()));
-        assertThat(result.isEmpty(), is(true));
-    }
-
-    @Test
-    void givenEmptyPath_whenGetFileExtensionCalled_thenReturnEmpty() {
-        String s3Path = "";
-
-        Optional<String> result = S3PathUtils.getFileExtension(s3Path);
-
-        assertThat(result, is(notNullValue()));
-        assertThat(result.isEmpty(), is(true));
-    }
-
-    @Test
-    void givenBasePath_whenGetFileExtensionCalled_thenReturnEmpty() {
-        String s3Path = "/";
-
-        Optional<String> result = S3PathUtils.getFileExtension(s3Path);
-
-        assertThat(result, is(notNullValue()));
-        assertThat(result.isEmpty(), is(true));
-    }
-
-    @Test
-    void givenBasicPath_whenGetFileExtensionCalled_thenReturnEmpty() {
-        String s3Path = "/document.";
-
-        Optional<String> result = S3PathUtils.getFileExtension(s3Path);
-
-        assertThat(result, is(notNullValue()));
-        assertThat(result.isEmpty(), is(true));
+        if(result.isPresent() && present) {
+            assertThat(result.get(), is(expectedExt));
+        }
     }
 
     @Test

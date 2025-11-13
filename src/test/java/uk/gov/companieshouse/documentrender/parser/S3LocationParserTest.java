@@ -17,7 +17,7 @@ import uk.gov.companieshouse.documentrender.utils.HeaderUtils;
 import uk.gov.companieshouse.logging.Logger;
 
 @ExtendWith(MockitoExtension.class)
-public class S3LocationParserTest {
+class S3LocationParserTest {
 
     @Mock
     Logger logger;

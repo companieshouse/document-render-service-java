@@ -47,20 +47,23 @@ public class DocumentRenderProcessor {
         return templateContent.getBytes();
     }
 
-    public String store(final HttpHeaders headers, final byte[] data, final Boolean isPublic) {
+    public String store(final HttpHeaders headers, final byte[] data, final boolean isPublic) {
         logger.trace("store(headers=%s, data=%d, isPublic=%s) method called.".formatted(headers, data.length, isPublic));
 
         // We need to improve this section, as ERIC modifies the case of some of these headers.
         final Map<String, String> modifiedHeaders = getModifiedHeadersMap(headers);
 
+        // This can be moved out into the S3 document service later.
         String accessControlList = isPublic ? "public-read" : "private";
         logger.debug("Generating document with ACL: %s".formatted(accessControlList));
 
+        // Parse the S3 location from the headers.
         S3Location s3Location = s3LocationParser.parse(modifiedHeaders, isPublic);
         logger.debug("Parsed incoming Location: %s".formatted(s3Location));
 
+        // Prepare the S3 path string.
         String s3Path = "%s/%s/%s".formatted(s3Location.getBucketName(), s3Location.getPath(), s3Location.getDocumentName())
-                .replaceAll("/{2,}", "/");;
+                .replaceAll("/{2,}", "/");
 
         return "s3://%s".formatted(s3Path);
     }

@@ -48,7 +48,7 @@ public class DocumentRenderIntegrationTest {
     private MockMvc mockMvc;
 
     @Test
-    public void givenValidRequest_whenRenderCalled_thenReturnOK() throws Exception {
+    void givenValidRequest_whenRenderCalled_thenReturnOK() throws Exception {
         var headers = HeaderUtils.createHttpHeadersForPDF();
         var request = DocumentUtils.createValidDocument();
 
@@ -68,7 +68,7 @@ public class DocumentRenderIntegrationTest {
     }
 
     @Test
-    public void givenMissingHeaders_whenRenderCalled_thenReturnBadRequest() throws Exception {
+    void givenMissingHeaders_whenRenderCalled_thenReturnBadRequest() throws Exception {
         var headerMap = HeaderUtils.createValidHeaderMapForPDF();
         headerMap.remove(TEMPLATE_NAME_HEADER);
 
@@ -103,7 +103,7 @@ public class DocumentRenderIntegrationTest {
     }
 
     @Test
-    public void givenBlankHeader_whenRenderCalled_thenReturnBadRequest() throws Exception {
+    void givenBlankHeader_whenRenderCalled_thenReturnBadRequest() throws Exception {
         var headerMap = HeaderUtils.createValidHeaderMapForPDF();
         headerMap.set(TEMPLATE_NAME_HEADER, "");
 
@@ -141,7 +141,7 @@ public class DocumentRenderIntegrationTest {
     }
 
     @Test
-    public void givenValidRequestPDF_whenStoreCalled_thenReturnOK() throws Exception {
+    void givenValidRequestPDF_whenStoreCalled_thenReturnOK() throws Exception {
         var headers = HeaderUtils.createHttpHeadersForPDF();
         var request = DocumentUtils.createValidDocument();
 
@@ -163,7 +163,7 @@ public class DocumentRenderIntegrationTest {
     }
 
     @Test
-    public void givenValidRequestHTML_whenStoreCalled_thenReturnOK() throws Exception {
+    void givenValidRequestHTML_whenStoreCalled_thenReturnOK() throws Exception {
         var headers = HeaderUtils.createHttpHeadersForHTML();
         var request = DocumentUtils.createValidDocument();
 
@@ -185,7 +185,7 @@ public class DocumentRenderIntegrationTest {
     }
 
     @Test
-    public void givenInvalidRequest_whenStoreCalled_thenReturnOK() throws Exception {
+    void givenInvalidRequest_whenStoreCalled_thenReturnOK() throws Exception {
         var headers = HeaderUtils.createHttpHeadersForPDF();
         var request = DocumentUtils.createValidDocument();
 

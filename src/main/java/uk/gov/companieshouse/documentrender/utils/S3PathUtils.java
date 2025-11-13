@@ -4,6 +4,10 @@ import java.util.Optional;
 
 public class S3PathUtils {
 
+    private S3PathUtils() {
+        super();
+    }
+
     /**
      * Checks if the given s3Path appears to end in a file (rather than a “folder” prefix).
      * If yes, returns an Optional containing the file’s extension (without the dot).

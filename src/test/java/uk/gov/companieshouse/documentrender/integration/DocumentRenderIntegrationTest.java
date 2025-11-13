@@ -136,8 +136,6 @@ public class DocumentRenderIntegrationTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(content().string(jsonError));
-//                .andExpect(jsonPath("$.errors").value(jsonError))
-//                .andExpect(jsonPath("$.description").value("A test item"))
         ;
     }
 
@@ -214,7 +212,17 @@ public class DocumentRenderIntegrationTest {
 
         var request = DocumentUtils.createValidDocument();
 
+        ApiError apiError = new ApiError();
+        apiError.setError("An unexpected content-type or accept header was detected: Unsupported Mime Type for rendering: 'application/json'");
+        apiError.setLocation("handleUnsupportedMimeTypeException");
+        apiError.setLocationType("parse-location");
+        apiError.setType("get-location");
+
+        ApiErrorResponse apiErrorResponse = new ApiErrorResponse();
+        apiErrorResponse.setErrors(List.of(apiError));
+
         String jsonBody = mapper.writeValueAsString(request);
+        String jsonError = mapper.writeValueAsString(apiErrorResponse);
 
         mockMvc.perform(
                         post("%s/store".formatted(servicePath))
@@ -226,8 +234,10 @@ public class DocumentRenderIntegrationTest {
                 )
                 .andDo(print())
                 .andExpect(status().isInternalServerError())
-                .andExpect(header().doesNotExist("Location"))
-
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().string(jsonError));
+//                .andExpect(jsonPath("$.errors").value(jsonError))
+//                .andExpect(jsonPath("$.description").value("A test item"))
         ;
     }
 

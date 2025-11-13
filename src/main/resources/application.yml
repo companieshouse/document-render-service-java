@@ -17,7 +17,7 @@ management:
     web:
       exposure:
         include: health, mappings
-      base-path: /
+      base-path: /document-render-java
       path-mapping:
         health: healthcheck
   endpoint:

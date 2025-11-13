@@ -10,8 +10,8 @@ locals {
   docker_repo                = "document-render-service-java"
   kms_alias                  = "alias/${var.aws_profile}/environment-services-kms"
   lb_listener_rule_priority  = 85
-  lb_listener_paths          = ["/document-render/*", "/document-render*"]
-  healthcheck_path           = "/document-render/healthcheck"
+  lb_listener_paths          = ["/document-render-java/*", "/document-render-java*"]
+  healthcheck_path           = "/document-render-java/healthcheck"
   healthcheck_matcher        = "200"
   s3_config_bucket           = data.vault_generic_secret.shared_s3.data["config_bucket_name"]
   app_environment_filename   = "document-render-service-java.env"

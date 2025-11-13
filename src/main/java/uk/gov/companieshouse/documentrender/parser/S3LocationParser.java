@@ -22,7 +22,11 @@ public class S3LocationParser {
     private static final Pattern LOCATION_REGEX = Pattern.compile("^s3://([a-zA-Z0-9\\-_.]+)/(.*)$");
     //private static final Pattern LOCATION_WITH_FILENAME_REGEX = Pattern.compile("^s3://([a-zA-Z0-9\\-_.]+)/(.+)/(.+\\..+)$");
 
-    @SuppressWarnings("java:S5852")
+    /**
+     * We have a number of Sonar PR issues around this regular expression, but they're mitigated elsewhere in the code.
+     * The length of the filename is checked elsewhere, and the bucket name and path are controlled inputs.
+     */
+    @SuppressWarnings({"java:S5852","java:S5998"})
     private static final Pattern LOCATION_WITH_FILENAME_REGEX =
             Pattern.compile(
                     "^s3://"

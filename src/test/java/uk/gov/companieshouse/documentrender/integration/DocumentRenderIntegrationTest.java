@@ -5,6 +5,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.companieshouse.documentrender.config.RestConfig.ACCEPT_HEADER;
 import static uk.gov.companieshouse.documentrender.config.RestConfig.TEMPLATE_NAME_HEADER;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -187,6 +188,30 @@ public class DocumentRenderIntegrationTest {
     @Test
     void givenInvalidRequest_whenStoreCalled_thenReturnOK() throws Exception {
         var headers = HeaderUtils.createHttpHeadersForPDF();
+        var request = DocumentUtils.createValidDocument();
+
+        String jsonBody = mapper.writeValueAsString(request);
+
+        mockMvc.perform(
+                        post("%s/store".formatted(servicePath))
+                                .headers(headers)
+                                .header("X-Request-Id", "my-x-request-id")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonBody)
+                                .accept(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isInternalServerError())
+                .andExpect(header().doesNotExist("Location"))
+
+        ;
+    }
+
+    @Test
+    void givenUnsupportedMimeType_whenStoreCalled_thenRaiseException() throws Exception {
+        var headers = HeaderUtils.createHttpHeadersForPDF();
+        headers.set(ACCEPT_HEADER, "application/json");
+
         var request = DocumentUtils.createValidDocument();
 
         String jsonBody = mapper.writeValueAsString(request);

@@ -52,4 +52,14 @@ public class HeaderUtils {
         headers.add(LOCATION_HEADER, "s3://local-test.document-render-service.ch.gov.uk/local/company-report/report.html");
         return headers;
     }
+
+    private static MultiValueMap<String, String> createBaseValidHeaders() {
+        MultiValueMap<String, String> headers = new LinkedMultiValueMap<>();
+        headers.add(ASSET_ID_HEADER, "letters");
+        headers.add(TEMPLATE_NAME_HEADER, "letter-template-en-v1.htm");
+        headers.add(ACCEPT_HEADER, "application/pdf");
+        headers.add(CONTENT_TYPE_HEADER, "application/json");
+        headers.add(LOCATION_HEADER, "s3://local-test.document-render-service.ch.gov.uk/local/company-report/");
+        return headers;
+    }
 }

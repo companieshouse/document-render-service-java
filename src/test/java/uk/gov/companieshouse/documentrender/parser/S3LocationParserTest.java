@@ -85,7 +85,7 @@ class S3LocationParserTest {
 
         assertThat(result, is(notNullValue()));
         assertThat(result.getBucketName(), is("local-test.document-render-service.ch.gov.uk"));
-        assertThat(result.getPath(), is("local/company-report"));
+        assertThat(result.getPath(), is("/local/company-report/"));
         assertThat(result.getDocumentName(), is(notNullValue()));
     }
 }

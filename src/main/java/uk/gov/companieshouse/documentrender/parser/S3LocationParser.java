@@ -21,8 +21,13 @@ public class S3LocationParser {
 
     private static final Pattern LOCATION_REGEX = Pattern.compile("^s3://([a-zA-Z0-9\\-_.]+)/(.*)$");
     //private static final Pattern LOCATION_WITH_FILENAME_REGEX = Pattern.compile("^s3://([a-zA-Z0-9\\-_.]+)/(.+)/(.+\\..+)$");
-    private static final Pattern LOCATION_WITH_FILENAME_REGEX = Pattern.compile(
-            "^s3://([A-Za-z0-9\\-_\\.]+)/([A-Za-z0-9\\-_\\.]+(?:/[A-Za-z0-9\\-_\\.]+)*)/([A-Za-z0-9\\-_]+\\.[A-Za-z0-9]{1,10})$");
+    private static final Pattern LOCATION_WITH_FILENAME_REGEX =
+            Pattern.compile(
+                    "^s3://"
+                            + "([A-Za-z0-9\\-\\.]+)"                // group 1: bucket name
+                            + "(/(?:[A-Za-z0-9\\-_/\\.]+/)*)"       // group 2: folder path (starting and ending with slash)
+                            + "(?:([A-Za-z0-9\\-_.]+\\.[A-Za-z0-9]+))?$"  // group 3: optional filename with extension
+            );
 
     private static final List<MediaType> SUPPORTED_MEDIA_TYPES = List.of(
             APPLICATION_PDF, TEXT_HTML

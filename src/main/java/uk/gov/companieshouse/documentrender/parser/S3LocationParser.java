@@ -21,6 +21,8 @@ public class S3LocationParser {
 
     private static final Pattern LOCATION_REGEX = Pattern.compile("^s3://([a-zA-Z0-9\\-_.]+)/(.*)$");
     //private static final Pattern LOCATION_WITH_FILENAME_REGEX = Pattern.compile("^s3://([a-zA-Z0-9\\-_.]+)/(.+)/(.+\\..+)$");
+
+    @SuppressWarnings("java:S5852")
     private static final Pattern LOCATION_WITH_FILENAME_REGEX =
             Pattern.compile(
                     "^s3://"

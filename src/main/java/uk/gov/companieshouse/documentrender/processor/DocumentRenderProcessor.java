@@ -57,11 +57,11 @@ public class DocumentRenderProcessor {
         String accessControlList = isPublic ? "public-read" : "private";
         logger.debug("Generating document with ACL: %s".formatted(accessControlList));
 
-        // Parse the S3 location from the headers.
+        // Parse the S3 location from the headers
         S3Location s3Location = s3LocationParser.parse(modifiedHeaders, isPublic);
         logger.debug("Parsed incoming Location: %s".formatted(s3Location));
 
-        // Prepare the S3 path string.
+        // Prepare the S3 path string (and remove any double forward-slashes).
         String s3Path = "%s/%s/%s".formatted(s3Location.getBucketName(), s3Location.getPath(), s3Location.getDocumentName())
                 .replaceAll("/{2,}", "/");
 

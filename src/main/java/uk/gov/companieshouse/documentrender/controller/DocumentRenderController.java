@@ -23,7 +23,6 @@ import uk.gov.companieshouse.documentrender.processor.DocumentRenderProcessor;
 import uk.gov.companieshouse.logging.Logger;
 
 @Controller
-@RequestMapping(path = "${spring.service.path.prefix}")
 public class DocumentRenderController {
 
     private final DocumentRenderProcessor processor;

@@ -8,23 +8,15 @@ spring:
       url: ${TEMPLATE_REGISTRY_ADDR:http://document-render-assets-registry:5002}
       #url: https://api.cidev.aws.chdev.org
 
-  management:
-    endpoints:
-      web:
-        exposure:
-          include: health
-        base-path: /document-render-java
-        path-mapping:
-          health: healthcheck
-    endpoint:
-      health:
-        access: read_only
-        show-details: always
+management:
+  endpoints:
+    enabled-by-default: false
+    web:
+      exposure:
+        include: "health"
+      base-path: /document-render-java
+      path-mapping:
+        health: healthcheck
+  endpoint:
     health:
-      defaults:
-        enabled: true
-      mongo:
-        enabled: false
-
-  server:
-    port: ${PORT:8181}
+      enabled: true

@@ -132,4 +132,27 @@ public class GlobalExceptionHandlerTest {
         assertThat(error.getLocationType(), is("assets-registry"));
         assertThat(error.getErrorValues(), is(nullValue()));
     }
+
+
+    @Test
+    void givenUnsupportedMimeType_whenExceptionRaised_thenReturnApiErrorResponse() {
+        String exceptionMessage = "\"Unsupported Mime Type for rendering: 'application/json'";
+
+        ResponseEntity<ApiErrorResponse> response = underTest.handleUnsupportedMimeTypeException(
+                new UnsupportedMimeTypeException(exceptionMessage));
+
+        assertThat(response, is(notNullValue()));
+        assertThat(response.getStatusCode().value(), is(500));
+
+        ApiErrorResponse body = response.getBody();
+        assertThat(body, is(notNullValue()));
+        assertThat(body.getErrors().size(), is(1));
+
+        ApiError error = body.getErrors().getFirst();
+        assertThat(error.getError(), is("An unexpected content-type or accept header was detected: %s".formatted(exceptionMessage)));
+        assertThat(error.getLocation(), is("handleUnsupportedMimeTypeException"));
+        assertThat(error.getType(), is("get-location"));
+        assertThat(error.getLocationType(), is("parse-location"));
+        assertThat(error.getErrorValues(), is(nullValue()));
+    }
 }

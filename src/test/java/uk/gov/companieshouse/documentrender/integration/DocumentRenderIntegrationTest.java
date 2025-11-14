@@ -135,7 +135,7 @@ public class DocumentRenderIntegrationTest {
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(content().string(jsonError));
+                .andExpect(content().string(jsonError))
         ;
     }
 

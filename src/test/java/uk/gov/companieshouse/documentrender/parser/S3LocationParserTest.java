@@ -3,6 +3,8 @@ package uk.gov.companieshouse.documentrender.parser;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static uk.gov.companieshouse.documentrender.config.RestConfig.ACCEPT_HEADER;
 import static uk.gov.companieshouse.documentrender.config.RestConfig.LOCATION_HEADER;
 import static uk.gov.companieshouse.documentrender.config.RestConfig.TEMPLATE_NAME_HEADER;
 
@@ -12,6 +14,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import uk.gov.companieshouse.documentrender.exception.UnsupportedMimeTypeException;
 import uk.gov.companieshouse.documentrender.parser.S3LocationParser.S3Location;
 import uk.gov.companieshouse.documentrender.utils.HeaderUtils;
 import uk.gov.companieshouse.logging.Logger;
@@ -87,5 +90,20 @@ class S3LocationParserTest {
         assertThat(result.getBucketName(), is("local-test.document-render-service.ch.gov.uk"));
         assertThat(result.getPath(), is("/local/company-report/"));
         assertThat(result.getDocumentName(), is(notNullValue()));
+    }
+
+    @Test
+    void givenUnsupportedMimeType_whenParseCalled_thenExceptionRaised() {
+        String mimeType = "application/json";
+        
+        Map<String, String> headers = HeaderUtils.createValidHeadersForHTML();
+        headers.put(ACCEPT_HEADER, mimeType);
+
+        UnsupportedMimeTypeException expectedException = assertThrows(UnsupportedMimeTypeException.class, () -> {
+            underTest.parse(headers, true);
+        });
+
+        assertThat(expectedException, is(notNullValue()));
+        assertThat(expectedException.getMessage(), is("Unsupported Mime Type for rendering: '%s'".formatted(mimeType)));
     }
 }

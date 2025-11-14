@@ -77,6 +77,9 @@ public class DocumentRenderControllerTest {
         when(documentRenderProcessor.render(headers, document)).thenReturn(documentContent);
         when(documentRenderProcessor.store(headers, documentContent, isPublic)).thenReturn(s3Location);
 
+        assertThat(document.getData(), is(notNullValue()));
+        assertThat(document.getData().size(), is(2));
+
         ResponseEntity<byte[]> response = underTest.store(headers, document, isPublic);
 
         verify(documentRenderProcessor, times(1)).render(headers, document);

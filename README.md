@@ -1,3 +1,12 @@
+<!-- 🚨 PROJECT ARCHIVED NOTICE 🚨 -->
+<div align="center" style="border: 3px solid #646464; padding: 1em; background-color: #323232;">
+  <strong style="color: #ffffff; font-size: 1.3em;">⚠️ THIS PROJECT HAS BEEN ARCHIVED — NO LONGER MAINTAINED ⚠️</strong>
+  <p style="color: #ffffff; margin-top: 0.5em;">
+    This project was intended to replace an older document rendering service (which is written in Golang), but was 
+    never fully adopted. As a result, it has been archived and is no longer maintained.
+  </p>
+</div>
+
 # document-render-service-java
 > A backend processing service for rendering templates into documents
 

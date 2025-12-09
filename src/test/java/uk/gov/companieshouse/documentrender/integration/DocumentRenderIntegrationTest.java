@@ -3,7 +3,9 @@ package uk.gov.companieshouse.documentrender.integration;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static uk.gov.companieshouse.documentrender.config.RestConfig.ACCEPT_HEADER;
 import static uk.gov.companieshouse.documentrender.config.RestConfig.TEMPLATE_NAME_HEADER;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -21,8 +23,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import uk.gov.companieshouse.api.error.ApiError;
 import uk.gov.companieshouse.api.error.ApiErrorResponse;
-import uk.gov.companieshouse.documentrender.model.Document;
 import uk.gov.companieshouse.documentrender.utils.DisabledIfDockerUnavailable;
+import uk.gov.companieshouse.documentrender.utils.DocumentUtils;
 import uk.gov.companieshouse.documentrender.utils.HeaderUtils;
 
 @SpringBootTest(
@@ -47,13 +49,11 @@ public class DocumentRenderIntegrationTest {
     private MockMvc mockMvc;
 
     @Test
-    public void givenValidRequest_whenRenderDocumentCalled_thenReturnOK() throws Exception {
-        var document = new Document();
+    void givenValidRequest_whenRenderCalled_thenReturnOK() throws Exception {
+        var headers = HeaderUtils.createHttpHeadersForPDF();
+        var request = DocumentUtils.createValidDocument();
 
-        var headerMap = HeaderUtils.createValidHeaderMap();
-        var headers = new HttpHeaders(headerMap);
-
-        String jsonBody = mapper.writeValueAsString(document);
+        String jsonBody = mapper.writeValueAsString(request);
 
         mockMvc.perform(
                         post("%s/".formatted(servicePath))
@@ -69,13 +69,126 @@ public class DocumentRenderIntegrationTest {
     }
 
     @Test
-    public void givenValidRequest_whenRenderAndStoreDocumentCalled_thenReturnOK() throws Exception {
-        var document = new Document();
+    void givenMissingHeaders_whenRenderCalled_thenReturnBadRequest() throws Exception {
+        var headerMap = HeaderUtils.createValidHeaderMapForPDF();
+        headerMap.remove(TEMPLATE_NAME_HEADER);
 
-        var headerMap = HeaderUtils.createValidHeaderMap();
+        var request = DocumentUtils.createValidDocument();
+
+        ApiError apiError = new ApiError();
+        apiError.setError("An expected header ws not supplied with the request: Required header 'templateName' is missing");
+        apiError.setLocation("handleMissingHeaderException");
+        apiError.setLocationType("request-header");
+        apiError.setType("document-render");
+
+        ApiErrorResponse apiErrorResponse = new ApiErrorResponse();
+        apiErrorResponse.setErrors(List.of(apiError));
+
         var headers = new HttpHeaders(headerMap);
 
-        String jsonBody = mapper.writeValueAsString(document);
+        String jsonBody = mapper.writeValueAsString(request);
+        String jsonError = mapper.writeValueAsString(apiErrorResponse);
+
+        mockMvc.perform(
+                        post("%s/".formatted(servicePath))
+                                .headers(headers)
+                                .header("X-Request-Id", "my-x-request-id")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonBody)
+                                .accept(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().string(jsonError));
+    }
+
+    @Test
+    void givenBlankHeader_whenRenderCalled_thenReturnBadRequest() throws Exception {
+        var headerMap = HeaderUtils.createValidHeaderMapForPDF();
+        headerMap.set(TEMPLATE_NAME_HEADER, "");
+
+        var request = DocumentUtils.createValidDocument();
+
+        ApiError apiError = new ApiError();
+        apiError.setError("An expected header ws not supplied with the request: Required header 'templateName' is missing");
+        apiError.setLocation("handleMissingHeaderException");
+        apiError.setLocationType("request-header");
+        apiError.setType("document-render");
+
+        ApiErrorResponse apiErrorResponse = new ApiErrorResponse();
+        apiErrorResponse.setErrors(List.of(apiError));
+
+        var headers = new HttpHeaders(headerMap);
+
+        String jsonBody = mapper.writeValueAsString(request);
+        String jsonError = mapper.writeValueAsString(apiErrorResponse);
+
+        mockMvc.perform(
+                        post("%s/".formatted(servicePath))
+                                .headers(headers)
+                                .header("X-Request-Id", "my-x-request-id")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonBody)
+                                .accept(MediaType.APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
+                .andExpect(content().string(jsonError))
+        ;
+    }
+
+    @Test
+    void givenValidRequestPDF_whenStoreCalled_thenReturnOK() throws Exception {
+        var headers = HeaderUtils.createHttpHeadersForPDF();
+        var request = DocumentUtils.createValidDocument();
+
+        String jsonBody = mapper.writeValueAsString(request);
+
+        mockMvc.perform(
+                        post("%s/store".formatted(servicePath))
+                                .headers(headers)
+                                .header("X-Request-Id", "my-x-request-id")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonBody)
+                                .accept(MediaType.APPLICATION_PDF)
+                )
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andExpect(content().contentType(MediaType.APPLICATION_OCTET_STREAM))
+                .andExpect(header().exists("Location"))
+        ;
+    }
+
+    @Test
+    void givenValidRequestHTML_whenStoreCalled_thenReturnOK() throws Exception {
+        var headers = HeaderUtils.createHttpHeadersForHTML();
+        var request = DocumentUtils.createValidDocument();
+
+        String jsonBody = mapper.writeValueAsString(request);
+
+        mockMvc.perform(
+                        post("%s/store".formatted(servicePath))
+                                .headers(headers)
+                                .header("X-Request-Id", "my-x-request-id")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(jsonBody)
+                                .accept(MediaType.TEXT_HTML)
+                )
+                .andDo(print())
+                .andExpect(status().isCreated())
+                .andExpect(content().contentType(MediaType.APPLICATION_OCTET_STREAM))
+                .andExpect(header().exists("Location"))
+        ;
+    }
+
+    @Test
+    void givenInvalidRequest_whenStoreCalled_thenReturnOK() throws Exception {
+        var headers = HeaderUtils.createHttpHeadersForPDF();
+        var request = DocumentUtils.createValidDocument();
+
+        String jsonBody = mapper.writeValueAsString(request);
 
         mockMvc.perform(
                         post("%s/store".formatted(servicePath))
@@ -86,33 +199,33 @@ public class DocumentRenderIntegrationTest {
                                 .accept(MediaType.APPLICATION_JSON)
                 )
                 .andDo(print())
-                .andExpect(status().isCreated())
+                .andExpect(status().isInternalServerError())
+                .andExpect(header().doesNotExist("Location"))
+
         ;
     }
 
     @Test
-    public void givenMissingHeaders_whenRenderDocumentCalled_thenReturnBadRequest() throws Exception {
-        var document = new Document();
+    void givenUnsupportedMimeType_whenStoreCalled_thenRaiseException() throws Exception {
+        var headers = HeaderUtils.createHttpHeadersForPDF();
+        headers.set(ACCEPT_HEADER, "application/json");
 
-        var headerMap = HeaderUtils.createValidHeaderMap();
-        headerMap.remove(TEMPLATE_NAME_HEADER);
+        var request = DocumentUtils.createValidDocument();
 
         ApiError apiError = new ApiError();
-        apiError.setError("An expected header ws not supplied with the request: Required header 'templateName' is missing");
-        apiError.setLocation("handleMissingHeaderException");
-        apiError.setLocationType("request-header");
-        apiError.setType("document-render");
+        apiError.setError("An unexpected content-type or accept header was detected: Unsupported Mime Type for rendering: 'application/json'");
+        apiError.setLocation("handleUnsupportedMimeTypeException");
+        apiError.setLocationType("parse-location");
+        apiError.setType("get-location");
 
         ApiErrorResponse apiErrorResponse = new ApiErrorResponse();
         apiErrorResponse.setErrors(List.of(apiError));
 
-        var headers = new HttpHeaders(headerMap);
-
-        String jsonBody = mapper.writeValueAsString(document);
+        String jsonBody = mapper.writeValueAsString(request);
         String jsonError = mapper.writeValueAsString(apiErrorResponse);
 
         mockMvc.perform(
-                        post("%s/".formatted(servicePath))
+                        post("%s/store".formatted(servicePath))
                                 .headers(headers)
                                 .header("X-Request-Id", "my-x-request-id")
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -120,46 +233,12 @@ public class DocumentRenderIntegrationTest {
                                 .accept(MediaType.APPLICATION_JSON)
                 )
                 .andDo(print())
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isInternalServerError())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(content().string(jsonError));
-    }
-
-    @Test
-    public void givenBlankHeader_whenRenderDocumentCalled_thenReturnBadRequest() throws Exception {
-        var document = new Document();
-
-        var headerMap = HeaderUtils.createValidHeaderMap();
-        headerMap.set(TEMPLATE_NAME_HEADER, "");
-
-        ApiError apiError = new ApiError();
-        apiError.setError("An expected header ws not supplied with the request: Required header 'templateName' is missing");
-        apiError.setLocation("handleMissingHeaderException");
-        apiError.setLocationType("request-header");
-        apiError.setType("document-render");
-
-        ApiErrorResponse apiErrorResponse = new ApiErrorResponse();
-        apiErrorResponse.setErrors(List.of(apiError));
-
-        var headers = new HttpHeaders(headerMap);
-
-        String jsonBody = mapper.writeValueAsString(document);
-        String jsonError = mapper.writeValueAsString(apiErrorResponse);
-
-        mockMvc.perform(
-                        post("%s/".formatted(servicePath))
-                                .headers(headers)
-                                .header("X-Request-Id", "my-x-request-id")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(jsonBody)
-                                .accept(MediaType.APPLICATION_JSON)
-                )
-                .andDo(print())
-                .andExpect(status().isBadRequest())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(content().string(jsonError));
+                .andExpect(content().string(jsonError))
 //                .andExpect(jsonPath("$.errors").value(jsonError))
 //                .andExpect(jsonPath("$.description").value("A test item"))
         ;
     }
+
 }
